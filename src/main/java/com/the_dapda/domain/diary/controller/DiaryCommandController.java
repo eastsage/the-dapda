@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 @Controller
 @RequiredArgsConstructor
-@RequestMapping("/diarys")
+@RequestMapping("/diaries")
 public class DiaryCommandController {
 
     private final DiaryCommandService diaryCommandService;
