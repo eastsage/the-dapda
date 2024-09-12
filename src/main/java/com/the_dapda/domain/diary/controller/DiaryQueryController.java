@@ -1,7 +1,7 @@
 package com.the_dapda.domain.diary.controller;
 
 import com.the_dapda.domain.diary.dto.response.DiaryGetResponse;
-import com.the_dapda.domain.diary.dto.response.QuestionResponse;
+import com.the_dapda.domain.diary.dto.response.QuestionGetResponse;
 import com.the_dapda.domain.diary.service.query.DiaryQueryService;
 import com.the_dapda.global.response.ResponseCode;
 import com.the_dapda.global.response.ResponseForm;
@@ -19,12 +19,12 @@ public class DiaryQueryController {
 
     private final DiaryQueryService diaryQueryService;
 
-    @GetMapping("/{categoryId}")
+    @GetMapping("/question/category/{categoryId}")
     public ResponseEntity<ResponseForm> getQuestion(@PathVariable("categoryId") Long categoryId) {
-        QuestionResponse questionResponse = diaryQueryService.getQuestion(categoryId);
+        QuestionGetResponse questionGetResponse = diaryQueryService.getQuestion(categoryId);
 
-        return questionResponse != null ?
-                ResponseEntity.ok(ResponseForm.of(ResponseCode.EXAMPLE_SUCCESS, questionResponse)) :
+        return questionGetResponse != null ?
+                ResponseEntity.ok(ResponseForm.of(ResponseCode.EXAMPLE_SUCCESS, questionGetResponse)) :
                 ResponseEntity.ok(ResponseForm.of(ResponseCode.EXAMPLE_FAIL));
     }
 
