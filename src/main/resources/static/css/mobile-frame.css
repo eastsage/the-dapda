@@ -1,0 +1,55 @@
+/* body를 Flexbox로 설정하여 중앙 정렬 */
+body {
+    background-color: #f8f9fa;
+    display: flex;
+    justify-content: center;  /* 가로 방향 중앙 정렬 */
+    align-items: center;      /* 세로 방향 중앙 정렬 */
+    height: 100vh;            /* 화면 전체 높이를 사용 */
+    margin: 0;                /* 기본 margin 제거 */
+}
+
+/* 모바일 폰 모양 */
+.mobile-frame {
+    width: 360px;
+    height: 700px; /* 길이를 더 길게 설정 */
+    border: 16px solid black;
+    border-radius: 36px;
+    padding: 20px;
+    background-color: white;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    position: relative;
+}
+
+/* 하단 스피커 */
+.mobile-frame:before {
+    content: '';
+    display: block;
+    width: 60px;
+    height: 5px;
+    background-color: #333;
+    border-radius: 10px;
+    position: absolute;
+    bottom: 10px; /* 스피커를 하단으로 이동 */
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+/* 하단 카메라 */
+.mobile-frame:after {
+    content: '';
+    display: block;
+    width: 20px;
+    height: 20px;
+    background-color: #333;
+    border-radius: 50%;
+    position: absolute;
+    top: 10px; /* 카메라도 하단으로 이동 */
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+/* 로그인 폼 컨텐츠를 폰 안에 넣기 */
+.mobile-content {
+    height: 100%;
+    overflow: auto;
+}
