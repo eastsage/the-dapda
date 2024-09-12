@@ -8,5 +8,5 @@ public interface CategoryQueryService {
 
     List<CategoryResponse> getCategories();
 
-    boolean savePrompt(Long categoryId, String prompt);
+    boolean savePrompt(String title, String prompt);
 }
