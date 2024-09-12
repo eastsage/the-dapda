@@ -1,5 +1,7 @@
 package com.the_dapda.domain.diary.service.command.impl;
 
+import com.the_dapda.domain.ai.dto.request.ChatRequestDto;
+import com.the_dapda.domain.ai.service.ChatService;
 import com.the_dapda.domain.category.entity.Category;
 import com.the_dapda.domain.category.repository.CategoryRepository;
 import com.the_dapda.domain.diary.dto.request.DiarySaveRequest;
@@ -20,6 +22,7 @@ public class DiaryCommandServiceImpl implements DiaryCommandService {
 
     private final DiaryRepository diaryRepository;
     private final CategoryRepository categoryRepository;
+    private final ChatService chatService;
 
     @Override
     public DiarySaveResponse saveDiary(DiarySaveRequest saveRequest) {
@@ -28,8 +31,13 @@ public class DiaryCommandServiceImpl implements DiaryCommandService {
         log.info("{}", category);
 
         // AI 로부터 응답 받아오는 로직 필요
+        String question = saveRequest.getQuestion(); // 사용자의 질문
+        String content = saveRequest.getContent(); // 사용자의 답변
+        ChatRequestDto chatRequestDto = new ChatRequestDto(question, content);
+        String answer = chatService.getAnswerAboutQuestion(chatRequestDto).getMessage();
 
-        Diary diary = new Diary(saveRequest.getContent(), saveRequest.getQuestion(), null);
+        // diary 저장
+        Diary diary = new Diary(saveRequest.getContent(), saveRequest.getQuestion(), answer);
         Diary savedDiary = diaryRepository.save(diary);
         return new DiarySaveResponse(savedDiary.getId());
     }
