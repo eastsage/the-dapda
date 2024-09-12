@@ -1,5 +1,6 @@
 package com.the_dapda.domain.user.service;
 
+import com.the_dapda.domain.user.dto.LoginDto;
 import com.the_dapda.domain.user.dto.UserDto;
 import com.the_dapda.domain.user.entity.User;
 import com.the_dapda.domain.user.repository.UserRepository;
@@ -35,20 +36,21 @@ public class UserServiceImpl implements UserService {
             return ResponseForm.of(ResponseCode.AUTH_REGISTER_DUPLICATE_NICKNAME, "이미 사용 중인 닉네임입니다.");
         }
 
-        com.the_dapda.domain.user.entity.User user = new User();
-        user.setUserId(userDto.getUserId());
+        User user = new User();
         user.setId(userDto.getId());
         user.setPassword(passwordEncoder.encode(userDto.getPassword()));
         user.setNickname(userDto.getNickname());
 
+        user.setRole("ROLE_USER");
         userRepository.save(user);
         return ResponseForm.of(ResponseCode.AUTH_REGISTER_SUCCESS, "회원가입 성공");
     }
 
-    public ResponseForm login(UserDto userDto) {
+
+    public ResponseForm login(LoginDto loginDto) {
         try {
             Authentication authentication = authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(userDto.getId(), userDto.getPassword()));
+                    new UsernamePasswordAuthenticationToken(loginDto.getId(), loginDto.getPassword()));
 
             SecurityContextHolder.getContext().setAuthentication(authentication);
 
@@ -56,7 +58,7 @@ public class UserServiceImpl implements UserService {
                     .map(GrantedAuthority::getAuthority)
                     .collect(Collectors.toList());
 
-            String token = jwtProvider.createToken(userDto.getId(), roles);
+            String token = jwtProvider.createToken(loginDto.getId(), roles);
             return ResponseForm.of(ResponseCode.AUTH_LOGIN_SUCCESS, token);
         } catch (Exception e) {
             return ResponseForm.of(ResponseCode.AUTH_LOGIN_FAIL, "로그인 실패");

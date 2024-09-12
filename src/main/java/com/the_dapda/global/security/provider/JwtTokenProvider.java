@@ -3,7 +3,9 @@ package com.the_dapda.global.security.provider;
 import io.jsonwebtoken.Jwts;
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import jakarta.annotation.PostConstruct;
 import jakarta.servlet.http.HttpServletRequest;
@@ -32,6 +34,8 @@ public class JwtTokenProvider {
     private final long tokenValidMillisecond = 1000L * 60 * 60; // 1시간 토큰 유효
     private SecretKey secretKey;
 
+    // 블랙리스트를 위한 저장소 (In-Memory)
+    private Set<String> blacklist = new HashSet<>();
 
     @PostConstruct
     protected void init() {
@@ -91,7 +95,12 @@ public class JwtTokenProvider {
     public boolean validateToken(String token) {
         LOGGER.info("[validateToken] 토큰 유효 체크 시작");
         try {
-            return ! Jwts.parser()
+            // 토큰이 블랙리스트에 있는지 확인
+            if (blacklist.contains(token)) {
+                LOGGER.info("[validateToken] 블랙리스트에 포함된 토큰");
+                return false;  // 블랙리스트에 있으면 유효하지 않음
+            }
+            return !Jwts.parser()
                     .verifyWith(secretKey)
                     .build()
                     .parseSignedClaims(token).getPayload()
@@ -100,5 +109,11 @@ public class JwtTokenProvider {
             LOGGER.info("[validateToken] 토큰 유효 체크 예외 발생");
             return false;
         }
+    }
+
+    // 토큰을 블랙리스트에 추가
+    public void addToBlacklist(String token) {
+        LOGGER.info("[addToBlacklist] 토큰을 블랙리스트에 추가합니다.");
+        blacklist.add(token);
     }
 }

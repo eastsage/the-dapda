@@ -1,13 +1,22 @@
 package com.the_dapda.domain.user.controller;
 
+import com.the_dapda.domain.user.dto.LoginDto;
 import com.the_dapda.domain.user.dto.UserDto;
 import com.the_dapda.domain.user.service.UserService;
+import com.the_dapda.global.response.ResponseCode;
 import com.the_dapda.global.response.ResponseForm;
+import com.the_dapda.global.security.provider.JwtTokenProvider;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+
 
 @RestController
 @RequiredArgsConstructor
@@ -16,15 +25,15 @@ public class UserController {
 
     // 회원가입
     @PostMapping("/register")
-    public ResponseEntity<ResponseForm> register(@RequestBody UserDto memberDto) {
-        ResponseForm response = userService.register(memberDto);
+    public ResponseEntity<ResponseForm> register(@RequestBody UserDto userDto) {
+        ResponseForm response = userService.register(userDto);
         return ResponseEntity.ok(response);
     }
 
     // 로그인
     @PostMapping("/login")
-    public ResponseEntity<ResponseForm> login(@RequestBody UserDto memberDto) {
-        ResponseForm response = userService.login(memberDto);
+    public ResponseEntity<ResponseForm> login(@RequestBody LoginDto loginDto) {
+        ResponseForm response = userService.login(loginDto);
         return ResponseEntity.ok(response);
     }
 
@@ -35,3 +44,4 @@ public class UserController {
         return ResponseEntity.ok(response);
     }
 }
+

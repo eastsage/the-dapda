@@ -36,7 +36,8 @@ public enum ResponseCode {
 
     AUTH_LOGIN_SUCCESS(200, "A005", "로그인에 성공했습니다."),
     AUTH_LOGIN_FAIL(400, "A006", "로그인에 실패했습니다."),
-    AUTH_LOGOUT_SUCCESS(200, "A006", "로그아웃에 성공했습니다.");
+    AUTH_LOGOUT_SUCCESS(200, "A007", "로그아웃에 성공했습니다."),
+    AUTH_LOGOUT_FAIL(400, "A008","로그아웃에 실패했습니다.")
 
     ;
 
