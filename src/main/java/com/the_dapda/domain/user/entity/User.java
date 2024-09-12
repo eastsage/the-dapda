@@ -9,23 +9,35 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+
+import java.util.Collection;
+import java.util.List;
 
 @Entity
 @Data
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
-public class Member extends BaseTimeEntity {
+public class User extends BaseTimeEntity implements UserDetails {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int member_id;
+    private int userId;
 
     private String id;
     private String password;
     private String nickname;
 
 
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return List.of();
+    }
 
-
+    @Override
+    public String getUsername() {
+        return this.getId();
+    }
 }

@@ -1,10 +1,14 @@
 package com.the_dapda.domain.user.dto;
 
+import lombok.Data;
+
 import java.time.LocalDateTime;
 
-public class MemberDto {
+@Data
 
-    private int member_id;
+public class UserDto {
+
+    private int userId;
     private String id;
     private String password;
     private String nickname;
