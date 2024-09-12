@@ -21,4 +21,10 @@ public class Diary extends BaseTimeEntity {
     private String question;
 
     private String answer;
+
+    public Diary(String content, String question, String answer) {
+        this.content = content;
+        this.question = question;
+        this.answer = answer;
+    }
 }
