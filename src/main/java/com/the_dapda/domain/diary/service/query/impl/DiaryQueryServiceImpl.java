@@ -2,6 +2,7 @@ package com.the_dapda.domain.diary.service.query.impl;
 
 import com.the_dapda.domain.category.entity.Category;
 import com.the_dapda.domain.category.repository.CategoryRepository;
+import com.the_dapda.domain.diary.dto.DiaryDto;
 import com.the_dapda.domain.diary.dto.response.DiaryGetResponse;
 import com.the_dapda.domain.diary.dto.response.QuestionGetResponse;
 import com.the_dapda.domain.diary.entity.Diary;
@@ -9,6 +10,8 @@ import com.the_dapda.domain.diary.repository.DiaryRepository;
 import com.the_dapda.domain.diary.service.query.DiaryQueryService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -37,5 +40,11 @@ public class DiaryQueryServiceImpl implements DiaryQueryService {
                 .orElseThrow(() -> new RuntimeException("no diary"));
 
         return DiaryGetResponse.diaryToDiaryGetResponse(diary);
+    }
+
+    @Override
+    public Page<DiaryDto> getDiaries(Pageable pageable) {
+        Page<Diary> diaries = diaryRepository.findAll(pageable);
+        return diaries.map(DiaryDto::new);
     }
 }

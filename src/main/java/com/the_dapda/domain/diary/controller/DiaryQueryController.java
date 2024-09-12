@@ -1,11 +1,14 @@
 package com.the_dapda.domain.diary.controller;
 
+import com.the_dapda.domain.diary.dto.DiaryDto;
 import com.the_dapda.domain.diary.dto.response.DiaryGetResponse;
 import com.the_dapda.domain.diary.dto.response.QuestionGetResponse;
 import com.the_dapda.domain.diary.service.query.DiaryQueryService;
 import com.the_dapda.global.response.ResponseCode;
 import com.the_dapda.global.response.ResponseForm;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -34,6 +37,15 @@ public class DiaryQueryController {
 
         return diaryGetResponse != null ?
                 ResponseEntity.ok(ResponseForm.of(ResponseCode.EXAMPLE_SUCCESS, diaryGetResponse)) :
+                ResponseEntity.ok(ResponseForm.of(ResponseCode.EXAMPLE_FAIL));
+    }
+
+    @GetMapping
+    public ResponseEntity<ResponseForm> getDiaries(Pageable pageable) {
+        Page<DiaryDto> diaryDtos = diaryQueryService.getDiaries(pageable);
+
+        return diaryDtos != null ?
+                ResponseEntity.ok(ResponseForm.of(ResponseCode.EXAMPLE_SUCCESS, diaryDtos)) :
                 ResponseEntity.ok(ResponseForm.of(ResponseCode.EXAMPLE_FAIL));
     }
 }
