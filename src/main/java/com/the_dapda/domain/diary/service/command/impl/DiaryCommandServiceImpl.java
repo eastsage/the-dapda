@@ -32,9 +32,10 @@ public class DiaryCommandServiceImpl implements DiaryCommandService {
         log.info("{}", category);
 
         // AI 로부터 응답 받아오는 로직 필요
+        String tfMode = saveRequest.getTfMode(); // 사용자의 질문에 모드
         String question = saveRequest.getQuestion(); // 사용자의 질문
         String content = saveRequest.getContent(); // 사용자의 답변
-        ChatRequestDto chatRequestDto = new ChatRequestDto(question, content);
+        ChatRequestDto chatRequestDto = new ChatRequestDto(question, content, tfMode);
         String answer = chatService.getAnswerAboutQuestion(chatRequestDto).getMessage();
 
         // diary 저장

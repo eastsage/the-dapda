@@ -31,8 +31,11 @@ public class DiaryQueryServiceImpl implements DiaryQueryService {
                 .orElseThrow(() -> new RuntimeException("no category"));
         log.info("카테고리 정보 {}", category);
 
-        // 카테고리를 통해 질문글 조회 로직 필요
-        String message = chatService.getQuestionAboutCategory(category.getPrompt()).getMessage();
+        String title = category.getTitle();
+        String prompt = category.getPrompt();
+
+        // 카테고리를 통해 질문글 생성 로직 필요
+        String message = chatService.getQuestionAboutCategory(title, prompt).getMessage();
         return new QuestionGetResponse(message);
     }
 
