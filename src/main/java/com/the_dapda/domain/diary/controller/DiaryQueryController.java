@@ -1,10 +1,14 @@
 package com.the_dapda.domain.diary.controller;
 
-import com.the_dapda.domain.diary.dto.response.QuestionResponse;
+import com.the_dapda.domain.diary.dto.DiaryDto;
+import com.the_dapda.domain.diary.dto.response.DiaryGetResponse;
+import com.the_dapda.domain.diary.dto.response.QuestionGetResponse;
 import com.the_dapda.domain.diary.service.query.DiaryQueryService;
 import com.the_dapda.global.response.ResponseCode;
 import com.the_dapda.global.response.ResponseForm;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -18,12 +22,30 @@ public class DiaryQueryController {
 
     private final DiaryQueryService diaryQueryService;
 
-    @GetMapping("/{categoryId}")
+    @GetMapping("/question/category/{categoryId}")
     public ResponseEntity<ResponseForm> getQuestion(@PathVariable("categoryId") Long categoryId) {
-        QuestionResponse questionResponse = diaryQueryService.getQuestion(categoryId);
+        QuestionGetResponse questionGetResponse = diaryQueryService.getQuestion(categoryId);
 
-        return questionResponse != null ?
-                ResponseEntity.ok(ResponseForm.of(ResponseCode.EXAMPLE_SUCCESS, questionResponse)) :
-                ResponseEntity.ok(ResponseForm.of(ResponseCode.EXAMPLE_FAIL ));
+        return questionGetResponse != null ?
+                ResponseEntity.ok(ResponseForm.of(ResponseCode.EXAMPLE_SUCCESS, questionGetResponse)) :
+                ResponseEntity.ok(ResponseForm.of(ResponseCode.EXAMPLE_FAIL));
+    }
+
+    @GetMapping("/{diaryId}")
+    public ResponseEntity<ResponseForm> getDiary(@PathVariable("diaryId") Long diaryId) {
+        DiaryGetResponse diaryGetResponse = diaryQueryService.getDiary(diaryId);
+
+        return diaryGetResponse != null ?
+                ResponseEntity.ok(ResponseForm.of(ResponseCode.EXAMPLE_SUCCESS, diaryGetResponse)) :
+                ResponseEntity.ok(ResponseForm.of(ResponseCode.EXAMPLE_FAIL));
+    }
+
+    @GetMapping
+    public ResponseEntity<ResponseForm> getDiaries(Pageable pageable) {
+        Page<DiaryDto> diaryDtos = diaryQueryService.getDiaries(pageable);
+
+        return diaryDtos != null ?
+                ResponseEntity.ok(ResponseForm.of(ResponseCode.EXAMPLE_SUCCESS, diaryDtos)) :
+                ResponseEntity.ok(ResponseForm.of(ResponseCode.EXAMPLE_FAIL));
     }
 }
