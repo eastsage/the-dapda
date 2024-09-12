@@ -7,4 +7,6 @@ import java.util.List;
 public interface CategoryQueryService {
 
     List<CategoryResponse> getCategories();
+
+    boolean savePrompt(Long categoryId, String prompt);
 }
