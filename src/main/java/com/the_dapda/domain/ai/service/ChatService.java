@@ -39,4 +39,23 @@ public class ChatService {
             throw new RuntimeException("Chat processing failed", e);
         }
     }
+
+    public ChatResponseDto getQuestionAboutCategory(String prompt) {
+        try {
+            String command = String.format("Please generate an appropriate question based on the following prompt: '%s'.", prompt);
+            PromptTemplate template = new PromptTemplate(command);
+            String message = template.render();
+
+            Message userMessage = new UserMessage(message);
+            Message systemMessage = new SystemMessage("translate to korean");
+
+            String response = chatModel.call(userMessage, systemMessage);
+
+            log.info("Response = " + response);
+            return new ChatResponseDto(response);
+        } catch (Exception e) {
+            log.error("Error occurred while processing chat request", e);
+            throw new RuntimeException("Chat processing failed", e);
+        }
+    }
 }
