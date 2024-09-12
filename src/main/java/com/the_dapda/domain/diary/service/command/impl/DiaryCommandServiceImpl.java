@@ -3,6 +3,7 @@ package com.the_dapda.domain.diary.service.command.impl;
 import com.the_dapda.domain.category.entity.Category;
 import com.the_dapda.domain.category.repository.CategoryRepository;
 import com.the_dapda.domain.diary.dto.request.DiarySaveRequest;
+import com.the_dapda.domain.diary.dto.response.DiaryDeleteResponse;
 import com.the_dapda.domain.diary.dto.response.DiarySaveResponse;
 import com.the_dapda.domain.diary.entity.Diary;
 import com.the_dapda.domain.diary.repository.DiaryRepository;
@@ -32,5 +33,14 @@ public class DiaryCommandServiceImpl implements DiaryCommandService {
         Diary diary = new Diary(saveRequest.getContent(), saveRequest.getQuestion(), null);
         Diary savedDiary = diaryRepository.save(diary);
         return new DiarySaveResponse(savedDiary.getId());
+    }
+
+    @Override
+    public DiaryDeleteResponse deleteDiary(Long diaryId) {
+        Diary diary = diaryRepository.findById(diaryId)
+                .orElseThrow(() -> new RuntimeException("no diary"));
+
+        diaryRepository.delete(diary);
+        return new DiaryDeleteResponse("success");
     }
 }
