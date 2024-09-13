@@ -11,6 +11,7 @@ import lombok.Setter;
 @AllArgsConstructor
 public class DiarySaveRequest {
 
+    private String style;
     private String content;
     private String question;
     private Long categoryId;
