@@ -1,5 +1,6 @@
 package com.the_dapda.domain.diary.service.query.impl;
 
+import com.the_dapda.domain.ai.service.ChatService;
 import com.the_dapda.domain.category.entity.Category;
 import com.the_dapda.domain.category.repository.CategoryRepository;
 import com.the_dapda.domain.diary.dto.DiaryDto;
@@ -23,15 +24,19 @@ public class DiaryQueryServiceImpl implements DiaryQueryService {
 
     private final DiaryRepository diaryRepository;
     private final CategoryRepository categoryRepository;
+    private final ChatService chatService;
 
     public QuestionGetResponse getQuestion(Long categoryId) {
         Category category = categoryRepository.findById(categoryId)
                 .orElseThrow(() -> new RuntimeException("no category"));
         log.info("카테고리 정보 {}", category);
 
-        // 카테고리를 통해 질문글 조회 로직 필요
+        String title = category.getTitle();
+        String prompt = category.getPrompt();
 
-        return new QuestionGetResponse();
+        // 카테고리를 통해 질문글 생성 로직 필요
+        String message = chatService.getQuestionAboutCategory(title, prompt).getMessage();
+        return new QuestionGetResponse(message);
     }
 
     @Override
