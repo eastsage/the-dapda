@@ -87,9 +87,13 @@ public class JwtTokenProvider {
     }
 
     public String resolveToken(HttpServletRequest request) {
-        LOGGER.info("[resolveToken] HTTP 헤더에서 Token 값 추출");
-        return request.getHeader("X-AUTH-TOKEN");
+        String bearerToken = request.getHeader("Authorization");
+        if (bearerToken != null && bearerToken.startsWith("Bearer ")) {
+            return bearerToken.substring(7);  // "Bearer " 이후의 토큰 값만 추출
+        }
+        return null;
     }
+
 
     // JWT 토큰의 유효성 + 만료일 체크
     public boolean validateToken(String token) {

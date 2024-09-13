@@ -4,69 +4,66 @@ import com.the_dapda.domain.user.dto.LoginDto;
 import com.the_dapda.domain.user.dto.UserDto;
 import com.the_dapda.domain.user.entity.User;
 import com.the_dapda.domain.user.repository.UserRepository;
-import com.the_dapda.global.response.ResponseCode;
-import com.the_dapda.global.response.ResponseForm;
-import com.the_dapda.global.security.provider.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
-    private final JwtTokenProvider jwtProvider;
     private final AuthenticationManager authenticationManager;
     private final PasswordEncoder passwordEncoder;
 
-    public ResponseForm register(UserDto userDto) {
-        if (userRepository.findById(userDto.getId()).isPresent()) {
-            return ResponseForm.of(ResponseCode.AUTH_REGISTER_DUPLICATE_ID, "이미 사용 중인 ID입니다.");
+    @Override
+    public User register(UserDto userDto) {
+        // 중복된 ID 체크
+        if (userRepository.findById(userDto.getId()) != null) {
+            throw new IllegalArgumentException("이미 사용 중인 ID입니다.");
         }
-        if(userRepository.findByNickname(userDto.getNickname()).isPresent()){
-            return ResponseForm.of(ResponseCode.AUTH_REGISTER_DUPLICATE_NICKNAME, "이미 사용 중인 닉네임입니다.");
+        // 중복된 닉네임 체크
+        if (userRepository.findByNickname(userDto.getNickname()) != null) {
+            throw new IllegalArgumentException("이미 사용 중인 닉네임입니다.");
         }
 
+        // 새로운 User 객체 생성 및 저장
         User user = new User();
         user.setId(userDto.getId());
         user.setPassword(passwordEncoder.encode(userDto.getPassword()));
         user.setNickname(userDto.getNickname());
-
         user.setRole("ROLE_USER");
-        userRepository.save(user);
-        return ResponseForm.of(ResponseCode.AUTH_REGISTER_SUCCESS, "회원가입 성공");
+
+        return userRepository.save(user);
     }
 
+    @Override
+    public User login(LoginDto loginDto) {
+        // 사용자의 인증 처리
+        Authentication authentication = authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(loginDto.getId(), loginDto.getPassword())
+        );
 
-    public ResponseForm login(LoginDto loginDto) {
-        try {
-            Authentication authentication = authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(loginDto.getId(), loginDto.getPassword()));
+        // 세션에 사용자 정보를 저장
+        SecurityContextHolder.getContext().setAuthentication(authentication);
 
-            SecurityContextHolder.getContext().setAuthentication(authentication);
-
-            List<String> roles = authentication.getAuthorities().stream()
-                    .map(GrantedAuthority::getAuthority)
-                    .collect(Collectors.toList());
-
-            String token = jwtProvider.createToken(loginDto.getId(), roles);
-            return ResponseForm.of(ResponseCode.AUTH_LOGIN_SUCCESS, token);
-        } catch (Exception e) {
-            return ResponseForm.of(ResponseCode.AUTH_LOGIN_FAIL, "로그인 실패");
-        }
+        // 사용자 정보 조회 후 반환
+        return userRepository.findById(loginDto.getId());
     }
 
-    public ResponseForm logout() {
+    @Override
+    public void logout() {
+        // 세션 초기화 (로그아웃)
         SecurityContextHolder.clearContext();
-        return ResponseForm.of(ResponseCode.AUTH_LOGOUT_SUCCESS, "로그아웃 성공");
+    }
+
+    @Override
+    public User findUserById(String userId) {
+        // 사용자 정보 조회
+        return userRepository.findById(userId);
     }
 }
