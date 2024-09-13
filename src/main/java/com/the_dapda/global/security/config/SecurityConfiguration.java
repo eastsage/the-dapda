@@ -38,7 +38,7 @@ public class SecurityConfiguration {
                         .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED) // 세션이 필요할 때 생성
                 )
                 .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers("/register", "/login", "/logout", "/login.html","/signup.html").permitAll() // 특정 URL은 인증 없이 접근 가능
+                        .requestMatchers("/register", "/login", "/logout").permitAll() // 특정 URL은 인증 없이 접근 가능
                         .anyRequest().authenticated() // 나머지 요청은 인증 필요
                 )
                 .exceptionHandling(exception -> exception
