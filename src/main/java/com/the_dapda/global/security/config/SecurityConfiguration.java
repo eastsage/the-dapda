@@ -1,9 +1,7 @@
 package com.the_dapda.global.security.config;
 
-import com.the_dapda.global.security.provider.JwtTokenProvider;
 import com.the_dapda.global.security.filter.JwtAuthenticationFilter;
-import com.the_dapda.global.security.config.CustomAccessDeniedHandler;
-import com.the_dapda.global.security.config.CustomAuthenticationEntryPoint;
+import com.the_dapda.global.security.provider.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -45,6 +43,11 @@ public class SecurityConfiguration {
                         // Restrict other requests to USER role
                         .anyRequest().hasRole("USER")
                 )
+//                // Authorization requests 테스트용
+//                .authorizeHttpRequests(authorize -> authorize
+//                        // 모든 요청을 허용
+//                        .anyRequest().permitAll()
+//                )
                 // Custom exception handling
                 .exceptionHandling(exception -> exception
                         .accessDeniedHandler(new CustomAccessDeniedHandler())
