@@ -34,13 +34,15 @@ public class DiaryCommandController {
         HttpSession session = request.getSession();
         int year = (Integer) session.getAttribute(String.valueOf(SessionConst.YEAR));
         int month = (Integer) session.getAttribute(String.valueOf(SessionConst.MONTH));
+        int day = (Integer) session.getAttribute(String.valueOf(SessionConst.DAY));
         log.info("year {}", year);
         log.info("month {}", month);
+        log.info("day {}", day);
 
         User user = (User) session.getAttribute("user");
         log.info("user {}", user);
 
-        saveRequest.setDate(new Date(year, month));
+        saveRequest.setDate(new Date(year, month, day));
         DiarySaveResponse diarySaveResponse = diaryCommandService.saveDiary(saveRequest, user);
 
         return diarySaveResponse != null ?

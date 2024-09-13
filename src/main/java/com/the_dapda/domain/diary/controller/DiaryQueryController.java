@@ -10,6 +10,7 @@ import com.the_dapda.global.session.SessionConst;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
@@ -19,6 +20,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+
+@Slf4j
 @Controller
 @RequiredArgsConstructor
 @RequestMapping("/diaries")
@@ -30,6 +33,7 @@ public class DiaryQueryController {
     public ResponseEntity<ResponseForm> getQuestion(
             @RequestParam(value = "year", required = false) Integer year,
             @RequestParam(value = "month", required = false) Integer month,
+            @RequestParam(value = "day", required = false) Integer day,
             @RequestParam(value = "categoryId") Long categoryId,
             HttpServletRequest request) {
 
@@ -38,6 +42,7 @@ public class DiaryQueryController {
         HttpSession session = request.getSession();
         session.setAttribute(String.valueOf(SessionConst.YEAR), year);
         session.setAttribute(String.valueOf(SessionConst.MONTH), month);
+        session.setAttribute(String.valueOf(SessionConst.DAY), day);
 
         return questionGetResponse != null ?
                 ResponseEntity.ok(ResponseForm.of(ResponseCode.EXAMPLE_SUCCESS, questionGetResponse)) :
