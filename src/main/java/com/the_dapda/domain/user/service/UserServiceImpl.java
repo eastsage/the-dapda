@@ -5,6 +5,8 @@ import com.the_dapda.domain.user.dto.UserDto;
 import com.the_dapda.domain.user.entity.User;
 import com.the_dapda.domain.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -15,6 +17,9 @@ import org.springframework.stereotype.Service;
 @Service
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
+
+
+    private static final Logger logger = LoggerFactory.getLogger(UserServiceImpl.class); // 로그 추가
 
     private final UserRepository userRepository;
     private final AuthenticationManager authenticationManager;
@@ -43,16 +48,22 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User login(LoginDto loginDto) {
+        System.out.println("login 메서드 호출됨 - ID: " + loginDto.getId()); // 콘솔 출력 추가
+
         // 사용자의 인증 처리
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(loginDto.getId(), loginDto.getPassword())
         );
 
+        System.out.println("인증 성공 - ID: " + loginDto.getId());
+
         // 세션에 사용자 정보를 저장
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
         // 사용자 정보 조회 후 반환
-        return userRepository.findById(loginDto.getId());
+        User user = userRepository.findById(loginDto.getId());
+        System.out.println("DB에서 사용자 조회 성공 - ID: " + loginDto.getId());
+        return user;
     }
 
     @Override

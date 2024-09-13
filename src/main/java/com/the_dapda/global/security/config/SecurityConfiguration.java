@@ -27,18 +27,26 @@ public class SecurityConfiguration {
                 .csrf(csrf -> csrf.disable()) // CSRF 보호 비활성화 (필요한 경우 활성화 가능)
                 .formLogin(formLogin -> formLogin
                         .loginPage("/login") // 커스텀 로그인 페이지 경로
+                        .loginProcessingUrl("/doLogin") // 실제 로그인 처리를 할 경로 설정 (컨트롤러의 /login과 충돌하지 않도록 변경)
                         .permitAll()
                 )
                 .logout(logout -> logout
                         .logoutUrl("/logout") // 로그아웃 URL 설정
-                        .logoutSuccessUrl("/login?logout") // 로그아웃 성공 시 리다이렉트 경로
-                        .permitAll()
+                        .logoutSuccessHandler((request, response, authentication) -> {
+                            if (authentication != null) {
+                                System.out.println("로그아웃 성공: " + authentication.getName());
+                            } else {
+                                System.out.println("로그인 상태가 아님");
+                            }
+                            response.sendRedirect("/login?logout");
+                        })
                 )
+
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED) // 세션이 필요할 때 생성
                 )
                 .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers("/register", "/login", "/logout").permitAll() // 특정 URL은 인증 없이 접근 가능
+                        .requestMatchers("/register", "/login", "/logout", "login.html").permitAll() // 특정 URL은 인증 없이 접근 가능
                         .anyRequest().authenticated() // 나머지 요청은 인증 필요
                 )
                 .exceptionHandling(exception -> exception
@@ -48,4 +56,5 @@ public class SecurityConfiguration {
 
         return http.build();
     }
+
 }
