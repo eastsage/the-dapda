@@ -9,12 +9,22 @@ import org.springframework.ai.chat.messages.SystemMessage;
 import org.springframework.ai.chat.messages.UserMessage;
 import org.springframework.ai.chat.model.ChatModel;
 import org.springframework.ai.chat.prompt.PromptTemplate;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
 public class ChatService {
+
+    @Value("${chat.command.f}")
+    private String fModeCommand;
+
+    @Value("${chat.command.t}")
+    private String tModeCommand;
+
+    @Value("${chat.command.default}")
+    private String defaultCommand;
 
     private final ChatModel chatModel;
 
@@ -23,35 +33,26 @@ public class ChatService {
             String command;
             String tfMode = requestDto.getTfMode();
             if (tfMode == null || tfMode.isEmpty()) {
-                // TFmode가 null이거나 비어있으면 기본값을 설정
-                tfMode = "default_value";  // 기본값을 원하는 값으로 설정
+                tfMode = "default_value";
             }
 
-            // F 모드(감정적 공감)와 T 모드(현실적인 피드백)에 따라 다른 질문 생성
             if ("F".equalsIgnoreCase(tfMode)) {
-                // F 모드: 감정적 공감을 해주는 명령어 생성
-                command = "You've just answered a question about {question}. " +
-                        "I can see that your answer '{answer}' shows great insight and reflection. " +
-                        "It must have taken a lot of thought and care to share this. You're doing an amazing job!";
+                command = fModeCommand;
             } else if ("T".equalsIgnoreCase(tfMode)) {
-                // T 모드: 현실적인 피드백을 해주는 명령어 생성
-                command = "You've just answered a question about {question}. " +
-                        "Your answer '{answer}' demonstrates practical and clear thinking. " +
-                        "Moving forward, here are some actionable steps you might consider based on your insights.";
+                command = tModeCommand;
             } else {
-                throw new IllegalArgumentException("Invalid TF mode: " + requestDto.getTfMode());
+                throw new IllegalArgumentException(defaultCommand.replace("{tfMode}", tfMode));
             }
-            // 템플릿에 사용자 질문과 답변을 추가
+
             PromptTemplate template = new PromptTemplate(command);
             template.add("question", requestDto.getQuestion());
-            template.add("answer", requestDto.getContent());  // "content"는 답변으로 사용됨
+            template.add("answer", requestDto.getContent());
+
             String message = template.render();
 
-            // 유저의 메시지와 시스템 명령 메시지 생성
             Message userMessage = new UserMessage(message);
             Message systemMessage = new SystemMessage("translate to korean");
 
-            // AI 모델 호출
             String response = chatModel.call(userMessage, systemMessage);
 
             log.info("Response = " + response);
