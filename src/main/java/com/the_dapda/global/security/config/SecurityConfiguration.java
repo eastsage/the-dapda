@@ -32,22 +32,22 @@ public class SecurityConfiguration {
                 .formLogin(formLogin -> formLogin.disable())
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                // Authorization requests
-                .authorizeHttpRequests(authorize -> authorize
-                        // Permit access to specific URLs
-                        .requestMatchers(
-                                "/register", // login 요청 허락
-                                "/login",
-                                "/logout"
-                        ).permitAll()
-                        // Restrict other requests to USER role
-                        .anyRequest().hasRole("USER")
-                )
-//                // Authorization requests 테스트용
+//                // Authorization requests
 //                .authorizeHttpRequests(authorize -> authorize
-//                        // 모든 요청을 허용
-//                        .anyRequest().permitAll()
+//                        // Permit access to specific URLs
+//                        .requestMatchers(
+//                                "/register", // login 요청 허락
+//                                "/login",
+//                                "/logout"
+//                        ).permitAll()
+//                        // Restrict other requests to USER role
+//                        .anyRequest().hasRole("USER")
 //                )
+                // Authorization requests 테스트용
+                .authorizeHttpRequests(authorize -> authorize
+                        // 모든 요청을 허용
+                        .anyRequest().permitAll()
+                )
                 // Custom exception handling
                 .exceptionHandling(exception -> exception
                         .accessDeniedHandler(new CustomAccessDeniedHandler())

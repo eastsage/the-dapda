@@ -36,7 +36,13 @@ public class DiaryCommandServiceImpl implements DiaryCommandService {
         String tfMode = saveRequest.getTfMode(); // 사용자의 질문에 모드
         String question = saveRequest.getQuestion(); // 사용자의 질문
         String content = saveRequest.getContent(); // 사용자의 답변
-        ChatRequestDto chatRequestDto = new ChatRequestDto(question, content, tfMode);
+
+        ChatRequestDto chatRequestDto = ChatRequestDto.builder()
+                .question(question)
+                .content(content)
+                .tfMode(tfMode)
+                .build();
+
         String answer = chatService.getAnswerAboutQuestion(chatRequestDto).getMessage();
 
         // diary 저장

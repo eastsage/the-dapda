@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>질문 확인</title>
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/css/mobile-frame.css" rel="stylesheet">
+    <style>
+        .message-box {
+            background-color: #1abc9c; /* 초록색 */
+            color: white;
+            padding: 15px;
+            border-radius: 15px;
+            margin: 15px 0;
+            word-wrap: break-word;
+            white-space: pre-wrap;
+            max-width: 80%; /* 말풍선 크기 조정 */
+            margin-left: auto; /* 오른쪽 정렬 */
+        }
+
+        .answer-box {
+            background-color: #f0f0f0; /* 연한 회색 */
+            border-radius: 15px;
+            padding: 10px;
+            margin-top: 10px;
+            max-width: 80%; /* 말풍선 크기 조정 */
+            margin-right: auto; /* 왼쪽 정렬 */
+        }
+
+        .btn-diary {
+            background-color: #1abc9c;
+            border-color: #1abc9c;
+            color: white;
+            width: 100%;
+        }
+
+        .btn-diary:hover {
+            background-color: #16a085;
+            border-color: #16a085;
+        }
+
+        /* T/F 버튼과 다이어리 쓰기 버튼을 하단에 고정 */
+        .bottom-container {
+            position: absolute;
+            bottom: 20px;
+            width: 100%;
+            left: 0;
+            padding: 0 15px;
+        }
+
+        #loading-spinner {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+
+<!-- 모바일 폰 모양 -->
+<div class="mobile-frame">
+    <div class="mobile-content">
+        <!-- 날짜 정보 표시 -->
+        <div class="container mt-3">
+            <div class="row">
+                <div class="col-12 text-center">
+                    <!-- 세션에서 날짜와 요일 가져오기 -->
+                    <h4 th:text="'🗓️ ' + ${session.selectedDate} + ' (' + ${dayOfWeek} + ')'"></h4>
+                </div>
+            </div>
+
+            <!-- 폼으로 데이터를 전송 -->
+            <form th:action="@{/submit-diary}" method="post">
+                <!-- AI 질문 표시 -->
+                <div class="row">
+                    <div class="col-12">
+                        <div class="message-box" th:text="${aiQuestion}">
+                            <!-- AI 질문 내용 -->
+                        </div>
+                        <input type="hidden" name="question" th:value="${aiQuestion}">
+                        <input type="hidden" name="categoryId" th:value="${categoryId}">
+                    </div>
+                </div>
+
+                <!-- 사용자 답변 작성 -->
+                <div class="row">
+                    <div class="col-12">
+                        <div class="answer-box">
+                            <textarea class="form-control" name="answer" rows="4" placeholder="질문에 대한 답변을 작성하세요"></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 하단 영역에 T/F 라디오 버튼과 다이어리 쓰기 버튼 -->
+                <div class="bottom-container">
+                    <!-- T/F 라디오 버튼 -->
+                    <div class="form-check d-flex justify-content-center mb-3">
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="tfValue" id="optionT" value="T" checked>
+                            <label class="form-check-label" for="optionT">
+                                T 🤔
+                            </label>
+                        </div>
+                        <div class="form-check ms-3">
+                            <input class="form-check-input" type="radio" name="tfValue" id="optionF" value="F">
+                            <label class="form-check-label" for="optionF">
+                                F 🥹
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="text-center mb-3">
+                        <small class="text-muted">T는 현실적인 답변, F는 감성적인 답변</small>
+                    </div>
+
+                    <!-- 다이어리 쓰기 버튼 -->
+                    <button type="submit" class="btn btn-diary">다이어리 쓰기</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- 로딩 스피너와 메시지 -->
+<div id="loading-spinner">
+    <div class="spinner-border mb-3" role="status">
+        <span class="visually-hidden">Loading...</span>
+    </div>
+    <p>AI 답변을 기다리는 중...</p>
+</div>
+
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
