@@ -1,13 +1,17 @@
 package com.the_dapda.domain.category.entity;
 
 import com.the_dapda.domain.BaseTimeEntity;
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
 import lombok.AccessLevel;
-import lombok.Getter;
+import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Getter
+@Data
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Category extends BaseTimeEntity {
 
@@ -19,6 +23,12 @@ public class Category extends BaseTimeEntity {
     private String title;
 
     private String prompt;
+
+    // 새로운 public 생성자
+    public Category(String title, String prompt) {
+        this.title = title;
+        this.prompt = prompt;
+    }
 
     @Override
     public String toString() {

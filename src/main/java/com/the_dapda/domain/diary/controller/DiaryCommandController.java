@@ -18,6 +18,7 @@ public class DiaryCommandController {
 
     private final DiaryCommandService diaryCommandService;
 
+    // 일기 저장
     @PostMapping
     public ResponseEntity<ResponseForm> saveDiary(@RequestBody DiarySaveRequest saveRequest) {
         DiarySaveResponse diarySaveResponse = diaryCommandService.saveDiary(saveRequest);
@@ -27,6 +28,7 @@ public class DiaryCommandController {
                 ResponseEntity.ok(ResponseForm.of(ResponseCode.EXAMPLE_FAIL));
     }
 
+    // 일기 삭제
     @DeleteMapping("/{diaryId}")
     public ResponseEntity<ResponseForm> deleteDiary(@PathVariable("diaryId") Long diaryId) {
         DiaryDeleteResponse diaryDeleteResponse = diaryCommandService.deleteDiary(diaryId);

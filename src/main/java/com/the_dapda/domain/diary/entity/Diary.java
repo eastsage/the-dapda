@@ -20,6 +20,8 @@ public class Diary extends BaseTimeEntity {
 
     private String question;
 
+    @Lob
+    @Column(name = "answer", columnDefinition = "TEXT")
     private String answer;
 
     public Diary(String content, String question, String answer) {

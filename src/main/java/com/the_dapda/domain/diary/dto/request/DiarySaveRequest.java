@@ -10,7 +10,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class DiarySaveRequest {
-
+    private String tfMode;
     private String content;
     private String question;
     private Long categoryId;
