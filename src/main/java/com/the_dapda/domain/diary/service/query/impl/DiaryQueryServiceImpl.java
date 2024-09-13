@@ -4,6 +4,7 @@ import com.the_dapda.domain.ai.service.ChatService;
 import com.the_dapda.domain.category.entity.Category;
 import com.the_dapda.domain.category.repository.CategoryRepository;
 import com.the_dapda.domain.diary.dto.DiaryDto;
+import com.the_dapda.domain.diary.dto.MainDiaryDto;
 import com.the_dapda.domain.diary.dto.response.DiaryGetResponse;
 import com.the_dapda.domain.diary.dto.response.QuestionGetResponse;
 import com.the_dapda.domain.diary.entity.Diary;
@@ -15,6 +16,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 @Slf4j
 @Service
@@ -51,5 +54,13 @@ public class DiaryQueryServiceImpl implements DiaryQueryService {
     public Page<DiaryDto> getDiaries(Pageable pageable) {
         Page<Diary> diaries = diaryRepository.findAll(pageable);
         return diaries.map(DiaryDto::new);
+    }
+
+    @Override
+    public List<MainDiaryDto> getMainDiaries(int year, int month, int userId) {
+        return diaryRepository.getMainDiaries(year, month, userId)
+                .stream()
+                .map(MainDiaryDto::new)
+                .toList();
     }
 }

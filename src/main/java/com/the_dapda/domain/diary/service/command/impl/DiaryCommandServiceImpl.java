@@ -10,6 +10,7 @@ import com.the_dapda.domain.diary.dto.response.DiarySaveResponse;
 import com.the_dapda.domain.diary.entity.Diary;
 import com.the_dapda.domain.diary.repository.DiaryRepository;
 import com.the_dapda.domain.diary.service.command.DiaryCommandService;
+import com.the_dapda.domain.user.entity.User;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -26,7 +27,7 @@ public class DiaryCommandServiceImpl implements DiaryCommandService {
     private final ChatService chatService;
 
     @Override
-    public DiarySaveResponse saveDiary(DiarySaveRequest saveRequest) {
+    public DiarySaveResponse saveDiary(DiarySaveRequest saveRequest, User user) {
         Category category = categoryRepository.findById(saveRequest.getCategoryId())
                 .orElseThrow(() -> new RuntimeException("no category"));
         log.info("{}", category);
@@ -45,7 +46,13 @@ public class DiaryCommandServiceImpl implements DiaryCommandService {
         String answer = chatService.getAnswerAboutQuestion(chatRequestDto).getMessage();
 
         // diary 저장
-        Diary diary = new Diary(saveRequest.getContent(), saveRequest.getQuestion(), answer);
+        Diary diary = Diary.builder()
+                .date(saveRequest.getDate())
+                .content(saveRequest.getContent())
+                .question(saveRequest.getQuestion())
+                .answer(answer)
+                .user(user)
+                .build();
         Diary savedDiary = diaryRepository.save(diary);
         return new DiarySaveResponse(savedDiary.getId());
     }
