@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>다이어리 결과</title>
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/css/mobile-frame.css" rel="stylesheet">
+    <style>
+        .message-box {
+            background-color: #1abc9c; /* 초록색 */
+            color: white;
+            padding: 15px;
+            border-radius: 15px;
+            margin: 15px 0;
+            word-wrap: break-word;
+            white-space: pre-wrap;
+            max-width: 100%;
+        }
+
+        .answer-box {
+            background-color: #f0f0f0; /* 연한 회색 */
+            border-radius: 15px;
+            padding: 10px;
+            margin-top: 10px;
+            word-wrap: break-word;
+            white-space: pre-wrap;
+        }
+
+        .ai-box {
+            background-color: #e0ffe0; /* 연한 초록색 */
+            border-radius: 15px;
+            padding: 15px;
+            margin-top: 15px;
+            word-wrap: break-word;
+            white-space: pre-wrap;
+        }
+
+        .btn-main {
+            background-color: #1abc9c;
+            border-color: #1abc9c;
+            color: white;
+            width: 100%;
+        }
+
+        .btn-main:hover {
+            background-color: #16a085;
+            border-color: #16a085;
+        }
+
+        .bottom-container {
+            position: absolute;
+            bottom: 20px;
+            width: 100%;
+            left: 0;
+            padding: 0 15px;
+        }
+    </style>
+</head>
+<body>
+
+<!-- 모바일 폰 모양 -->
+<div class="mobile-frame">
+    <div class="mobile-content">
+        <!-- 날짜 정보 표시 -->
+        <div class="container mt-3">
+            <div class="row">
+                <div class="col-12 text-center">
+                    <h4>
+                        <!-- 세션에서 날짜와 요일 가져오기 -->
+                        🗓️ <span th:text="${session.selectedDate} + ' (' + ${dayOfWeek} + ')'"></span>
+                    </h4>
+                </div>
+            </div>
+
+            <!-- 질문 내용 표시 -->
+            <div class="row">
+                <div class="col-12">
+                    <div class="message-box" th:text="${question}">
+                        <!-- 질문 내용 -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- 사용자 답변 내용 표시 -->
+            <div class="row">
+                <div class="col-12">
+                    <div class="answer-box" th:text="${userAnswer}">
+                        <!-- 사용자 답변 내용 -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- AI 답변 내용 표시 -->
+            <div class="row">
+                <div class="col-12">
+                    <div class="ai-box" th:text="${aiAnswer}">
+                        <!-- AI 답변 내용 -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- 메인으로 가는 버튼 -->
+            <div class="bottom-container">
+                <button class="btn btn-main" onclick="window.location.href='/main'">메인으로</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
