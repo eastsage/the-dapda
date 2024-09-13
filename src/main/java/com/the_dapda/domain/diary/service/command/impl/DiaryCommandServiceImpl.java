@@ -37,9 +37,9 @@ public class DiaryCommandServiceImpl implements DiaryCommandService {
         String content = saveRequest.getContent(); // 사용자의 답변
 
         ChatRequestDto chatRequestDto = ChatRequestDto.builder()
-                .question(tfMode)
-                .content(question)
-                .tfMode(content)
+                .question(question)
+                .content(content)
+                .tfMode(tfMode)
                 .build();
 
         String answer = chatService.getAnswerAboutQuestion(chatRequestDto).getMessage();
