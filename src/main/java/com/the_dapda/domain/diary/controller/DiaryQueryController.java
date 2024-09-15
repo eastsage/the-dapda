@@ -38,7 +38,8 @@ public class DiaryQueryController {
     private final DiaryQueryService diaryQueryService;
 
     @GetMapping("/question")
-    public ResponseEntity<ResponseForm> getQuestion(
+    public String getQuestion(
+            Model model,
             @RequestParam(value = "year", required = false) Integer year,
             @RequestParam(value = "month", required = false) Integer month,
             @RequestParam(value = "day", required = false) Integer day,
@@ -46,24 +47,26 @@ public class DiaryQueryController {
             HttpServletRequest request) {
 
         QuestionGetResponse questionGetResponse = diaryQueryService.getQuestion(categoryId);
+        model.addAttribute("question", questionGetResponse.getQuestion());
 
         HttpSession session = request.getSession();
         session.setAttribute(String.valueOf(SessionConst.YEAR), year);
         session.setAttribute(String.valueOf(SessionConst.MONTH), month);
         session.setAttribute(String.valueOf(SessionConst.DAY), day);
 
-        return questionGetResponse != null ?
-                ResponseEntity.ok(ResponseForm.of(ResponseCode.EXAMPLE_SUCCESS, questionGetResponse)) :
-                ResponseEntity.ok(ResponseForm.of(ResponseCode.EXAMPLE_FAIL));
+        return "view-question";
     }
 
     @GetMapping("/{diaryId}")
-    public ResponseEntity<ResponseForm> getDiary(@PathVariable("diaryId") Long diaryId) {
+    public String getDiary(
+            Model model,
+            @PathVariable("diaryId") Long diaryId) {
         DiaryGetResponse diaryGetResponse = diaryQueryService.getDiary(diaryId);
+        model.addAttribute("question", diaryGetResponse.getQuestion());
+        model.addAttribute("content", diaryGetResponse.getContent());
+        model.addAttribute("answer", diaryGetResponse.getAnswer());
 
-        return diaryGetResponse != null ?
-                ResponseEntity.ok(ResponseForm.of(ResponseCode.EXAMPLE_SUCCESS, diaryGetResponse)) :
-                ResponseEntity.ok(ResponseForm.of(ResponseCode.EXAMPLE_FAIL));
+        return "view-diary";
     }
 
     @GetMapping

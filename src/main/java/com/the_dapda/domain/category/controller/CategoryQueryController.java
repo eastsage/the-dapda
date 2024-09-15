@@ -8,6 +8,7 @@ import com.the_dapda.global.response.ResponseForm;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -23,12 +24,12 @@ public class CategoryQueryController {
     private final CategoryQueryService categoryQueryService;
 
     @GetMapping
-    public ResponseEntity<ResponseForm> getCategories() {
+    public String getCategories(Model model) {
         List<CategoryResponse> categoryResponses = categoryQueryService.getCategories();
 
-        return categoryResponses != null ?
-                ResponseEntity.ok(ResponseForm.of(ResponseCode.EXAMPLE_SUCCESS, categoryResponses)) :
-                ResponseEntity.ok(ResponseForm.of(ResponseCode.EXAMPLE_FAIL ));
+        model.addAttribute("categoryResponses", categoryResponses);
+
+        return "select-question";
     }
 
     @PatchMapping("/updatePrompt") // 카테고리에 새로운 prompt 저장 및 수정
