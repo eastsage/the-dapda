@@ -3,62 +3,36 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>질문 확인</title>
+    <title>질문 선택</title>
 
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="/css/mobile-frame.css" rel="stylesheet">
+
     <style>
-        .message-box {
-            background-color: #1abc9c; /* 초록색 */
-            color: white;
+        body {font-family: Verdana, sans-serif;}
+
+        /* 모바일 프레임 안에 버튼들 배치 */
+        .btn-container {
+            display: flex;
+            flex-direction: column;
+            gap: 10px; /* 버튼 사이 간격 */
+            padding: 20px;
+        }
+
+        /* 버튼을 가로로 가득 채움 */
+        .btn-block {
+            width: 100%;
             padding: 15px;
-            border-radius: 15px;
-            margin: 15px 0;
-            word-wrap: break-word;
-            white-space: pre-wrap;
-            max-width: 80%; /* 말풍선 크기 조정 */
-            margin-left: auto; /* 오른쪽 정렬 */
+            font-size: 16px;
         }
 
-        .answer-box {
-            background-color: #f0f0f0; /* 연한 회색 */
-            border-radius: 15px;
-            padding: 10px;
-            margin-top: 10px;
-            max-width: 80%; /* 말풍선 크기 조정 */
-            margin-right: auto; /* 왼쪽 정렬 */
-        }
+        /* 버튼 색상 커스텀 */
+        .btn-custom-1 { background-color: #1abc9c; color: white; }
+        .btn-custom-2 { background-color: #3498db; color: white; }
+        .btn-custom-3 { background-color: #e74c3c; color: white; }
+        .btn-custom-4 { background-color: #f39c12; color: white; }
 
-        .btn-diary {
-            background-color: #1abc9c;
-            border-color: #1abc9c;
-            color: white;
-            width: 100%;
-        }
-
-        .btn-diary:hover {
-            background-color: #16a085;
-            border-color: #16a085;
-        }
-
-        /* T/F 버튼과 다이어리 쓰기 버튼을 하단에 고정 */
-        .bottom-container {
-            position: absolute;
-            bottom: 20px;
-            width: 100%;
-            left: 0;
-            padding: 0 15px;
-        }
-
-        #loading-spinner {
-            display: none;
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            text-align: center;
-        }
     </style>
 </head>
 <body>
@@ -66,91 +40,35 @@
 <!-- 모바일 폰 모양 -->
 <div class="mobile-frame">
     <div class="mobile-content">
-        <!-- 날짜 정보 표시 -->
-        <div class="container mt-3">
-            <div class="row">
-                <div class="col-12 text-center">
-                    <!-- 세션에서 날짜와 요일 가져오기 -->
-                    <h4 th:text="${session.selectedDate} + ' (' + ${dayOfWeek} + ')'"></h4>
-                </div>
-            </div>
 
-            <!-- 폼으로 데이터를 전송 -->
-            <form th:action="@{/submit-diary}" method="post" onsubmit="return showSpinner()">
-                <!-- AI 질문 표시 -->
-                <div class="row">
-                    <div class="col-12">
-                        <div class="message-box" th:text="${aiQuestion}">
-                            <!-- AI 질문 내용 -->
-                        </div>
-                        <input type="hidden" name="question" th:value="${aiQuestion}">
-                        <input type="hidden" name="categoryId" th:value="${categoryId}">
-                    </div>
-                </div>
+        <!-- 버튼 컨테이너 -->
+        <div class="btn-container">
+            <!-- 감정과 기분 버튼 (categoryId = 1) -->
+            <a th:href="@{/diaries/question(year=${year}, month=${month}, day=${day}, categoryId=1)}" class="btn btn-block btn-custom-1">
+                감정과 기분
+            </a>
 
-                <!-- 사용자 답변 작성 -->
-                <div class="row">
-                    <div class="col-12">
-                        <div class="answer-box">
-                            <textarea class="form-control" name="answer" rows="4" placeholder="질문에 대한 답변을 작성하세요"></textarea>
-                        </div>
-                    </div>
-                </div>
+            <!-- 인간 관계 버튼 (categoryId = 2) -->
+            <a th:href="@{/diaries/question(year=${year}, month=${month}, day=${day}, categoryId=2)}" class="btn btn-block btn-custom-2">
+                인간 관계
+            </a>
 
-                <!-- 하단 영역에 T/F 라디오 버튼과 다이어리 쓰기 버튼 -->
-                <div class="bottom-container">
-                    <!-- T/F 라디오 버튼 -->
-                    <div class="form-check d-flex justify-content-center mb-3">
-                        <div class="form-check">
-                            <input class="form-check-input" type="radio" name="tfValue" id="optionT" value="T" checked>
-                            <label class="form-check-label" for="optionT">
-                                T
-                            </label>
-                        </div>
-                        <div class="form-check ms-3">
-                            <input class="form-check-input" type="radio" name="tfValue" id="optionF" value="F">
-                            <label class="form-check-label" for="optionF">
-                                F
-                            </label>
-                        </div>
-                    </div>
+            <!-- 일과 커리어 버튼 (categoryId = 3) -->
+            <a th:href="@{/diaries/question(year=${year}, month=${month}, day=${day}, categoryId=3)}" class="btn btn-block btn-custom-3">
+                일과 커리어
+            </a>
 
-                    <div class="text-center mb-3">
-                        <small class="text-muted">T는 현실적인 답변, F는 감성적인 답변</small>
-                    </div>
-
-                    <!-- 다이어리 쓰기 버튼 -->
-                    <button type="submit" class="btn btn-diary">다이어리 쓰기</button>
-                </div>
-            </form>
+            <!-- 성찰과 감사 버튼 (categoryId = 4) -->
+            <a th:href="@{/diaries/question(year=${year}, month=${month}, day=${day}, categoryId=4)}" class="btn btn-block btn-custom-4">
+                성찰과 감사
+            </a>
         </div>
+
     </div>
 </div>
 
-<!-- 로딩 스피너와 메시지 -->
-<div id="loading-spinner">
-    <div class="spinner-border mb-3" role="status">
-        <span class="visually-hidden">Loading...</span>
-    </div>
-    <p>AI 답변을 기다리는 중...</p>
-</div>
-
-<!-- Bootstrap JS -->
+<!-- Bootstrap JS (하나만 필요) -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
-<!-- JavaScript function to show spinner and disable buttons on form submit -->
-<script>
-    function showSpinner() {
-        // 스피너 표시
-        document.getElementById('loading-spinner').style.display = 'block';
-
-        // 제출된 후 버튼 비활성화
-        const buttons = document.querySelectorAll('button[type="submit"]');
-        buttons.forEach(button => button.disabled = true);
-
-        // 폼을 정상적으로 제출하기 위해 true 반환
-        return true;
-    }
-</script>
 </body>
 </html>

@@ -18,7 +18,7 @@
             width: 100%;
             background: #1abc9c;
             text-align: center;
-            margin-top: 15px; /* 캘린더를 10px 더 내림 */
+            margin-top: 15px;
         }
 
         .month ul {
@@ -55,7 +55,7 @@
 
         .weekdays li {
             display: inline-block;
-            width: calc(100% / 8); /* 7일이 한 줄에 나오도록 계산식 적용 */
+            width: calc(100% / 8);
             color: #666;
             text-align: center;
         }
@@ -69,27 +69,56 @@
         .days li {
             list-style-type: none;
             display: inline-block;
-            width: calc(100% / 8); /* 7일이 한 줄에 나오도록 계산식 적용 */
+            width: calc(100% / 8);
             text-align: center;
             margin-bottom: 5px;
             font-size: 12px;
             color: #777;
+            height: 35px; /* 고정 높이 설정 */
+            line-height: 35px; /* 텍스트의 세로 정렬을 맞추기 위해 line-height와 동일하게 설정 */
         }
 
-        .days li .active {
-            padding: 5px;
-            background: #1abc9c;
-            color: white !important;
+        .days li .highlight-day {
+            background-color: #FDFAD9;
+            border-radius: 50%;
+            padding: 3px 6px; /* 위아래 padding을 줄여서 하이라이팅 높이 조정 */
+            display: inline-block;
+            color: #333;
+            height: 30px; /* 고정 높이 설정 */
+            line-height: 30px; /* 텍스트를 세로 중앙에 위치시키기 위해 동일한 값 설정 */
+        }
+
+        .days li .today-highlight {
+            background-color: #86D293;
+            border-radius: 50%;
+            padding: 3px 6px; /* 위아래 padding을 줄여서 크기 조정 */
+            display: inline-block;
+            color: white;
+            height: 30px; /* 고정 높이 설정 */
+            line-height: 30px; /* 텍스트의 세로 정렬을 맞추기 위해 line-height와 동일하게 설정 */
         }
 
         /* 캘린더를 더 길쭉하게 조정 */
         .mobile-content {
-            height: 750px; /* 캘린더가 세로로 더 길게 표시되도록 */
+            height: 750px;
+        }
+
+        /* a 태그에서 파란색과 밑줄 제거 */
+        .custom-link {
+            color: inherit; /* 부모 요소의 색상 상속 (원래 텍스트 색상 유지) */
+            text-decoration: none; /* 밑줄 제거 */
+        }
+
+        /* a 태그에 hover(마우스 오버) 시 스타일 변경 */
+        .custom-link:hover {
+            color: inherit; /* hover 시에도 텍스트 색상 유지 */
         }
 
         /* Add media queries for smaller screens */
         @media screen and (max-width:720px) {
-            .weekdays li, .days li {width: calc(100% / 8);} /* 작은 화면에서도 7일이 한 줄에 나올 수 있도록 동일하게 설정 */
+            .weekdays li, .days li {
+                width: calc(100% / 8);
+            }
         }
 
         @media screen and (max-width: 420px) {
@@ -136,18 +165,26 @@
             <!-- 빈 칸 채우기 -->
             <li th:each="i : ${emptyDays}"> </li>
 
-            <!-- 날짜 채우기 -->
-            <li th:each="day, stat : ${days}">
-                <span th:if="${day == today}" class="active" th:text="${day}"></span>
-                <span th:if="${day != today}" th:text="${day}"></span>
+            <!-- 1부터 daysInMonth까지 반복 -->
+            <li th:each="day, stat : ${#numbers.sequence(1, daysInMonth)}">
+                <!-- days 리스트에 포함된 날짜라면 노란 배경과 동그라미 추가 -->
+                <span th:if="${days.contains(day) && day != today}"
+                      th:text="${day}"
+                      class="highlight-day">
+                </span>
+                <!-- 날짜가 days 리스트에 포함되지 않은 경우, /question/category 페이지로 이동 -->
+                <a th:if="${!days.contains(day)}"
+                   th:href="@{/diaries/question/category(year=${currentYear}, month=${currentMonth}, day=${day})}"
+                   th:text="${day}"
+                   class="custom-link">
+                </a>
+
             </li>
         </ul>
 
     </div>
 </div>
 
-<!-- Bootstrap JS -->
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script th:inline="javascript">
     function changeMonth(value) {
         // 연, 월을 변경하는 로직을 추가하세요.
@@ -167,7 +204,7 @@
             currentMonth = 1;
             currentYear += 1;
         }
-        window.location.href = `/main?year=${currentYear}&month=${currentMonth}`;
+        window.location.href = `/diaries/main?year=${currentYear}&month=${currentMonth}`;
     }
 </script>
 </body>

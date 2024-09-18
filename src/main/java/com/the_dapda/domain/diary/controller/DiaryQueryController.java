@@ -16,6 +16,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -36,6 +39,17 @@ import java.util.List;
 public class DiaryQueryController {
 
     private final DiaryQueryService diaryQueryService;
+
+    @GetMapping("/question/category")
+    public String questionCategory(@RequestParam("year") int year,
+                                   @RequestParam("month") int month,
+                                   @RequestParam("day") int day,
+                                   Model model) {
+        model.addAttribute("year", year);
+        model.addAttribute("month", month);
+        model.addAttribute("day", day);
+        return "select-question";
+    }
 
     @GetMapping("/question")
     public String getQuestion(
@@ -82,7 +96,8 @@ public class DiaryQueryController {
     public String mainPage(Model model,
                            @RequestParam(value = "year", required = false) Integer year,
                            @RequestParam(value = "month", required = false) Integer month,
-                           HttpServletRequest request) {
+                           HttpServletRequest request, @AuthenticationPrincipal User securityUser) {
+
         // 현재 연도와 월 기본값 설정 (파라미터가 없으면 현재 날짜 사용)
         LocalDate now = LocalDate.now();
         int currentYear = (year != null) ? year : now.getYear();
@@ -108,16 +123,18 @@ public class DiaryQueryController {
         User user = (User) session.getAttribute("user");
         log.info("user {}", user);
 
-        List<MainDiaryDto> diaryDtos = diaryQueryService.getMainDiaries(year, month, 1);
+        List<MainDiaryDto> diaryDtos = diaryQueryService.getMainDiaries(currentYear, currentMonth, 1);
         // 해당 월의 날짜 리스트 생성
         List<Integer> days = new ArrayList<>();
         for (MainDiaryDto diaryDto : diaryDtos) {
             days.add(diaryDto.getDate().getDay());
         }
-
+        log.info("days {}", days);
+        log.info("empty days {}", emptyDays);
         model.addAttribute("currentYear", currentYear);
         model.addAttribute("currentMonthName", currentMonthName);
         model.addAttribute("currentMonth", currentMonth);
+        model.addAttribute("daysInMonth", daysInMonth);
         model.addAttribute("today", today);
         model.addAttribute("emptyDays", emptyDays);
         model.addAttribute("days", days);
