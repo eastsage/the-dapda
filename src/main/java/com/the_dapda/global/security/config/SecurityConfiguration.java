@@ -1,7 +1,7 @@
 package com.the_dapda.global.security.config;
 
-import com.the_dapda.global.security.filter.JwtAuthenticationFilter;
-import com.the_dapda.global.security.provider.JwtTokenProvider;
+import com.the_dapda.global.security.config.CustomAccessDeniedHandler;
+import com.the_dapda.global.security.config.CustomAuthenticationEntryPoint;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -10,13 +10,10 @@ import org.springframework.security.config.annotation.authentication.configurati
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
 @RequiredArgsConstructor
 public class SecurityConfiguration {
-
-    private final JwtTokenProvider jwtTokenProvider;
 
     // AuthenticationManager 빈 등록
     @Bean
@@ -27,35 +24,37 @@ public class SecurityConfiguration {
     @Bean
     SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                // Disable basic HTTP and CSRF
-                .httpBasic(httpBasic -> httpBasic.disable())
-                .formLogin(formLogin -> formLogin.disable())
-                .csrf(csrf -> csrf.disable())
-                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-//                // Authorization requests
-//                .authorizeHttpRequests(authorize -> authorize
-//                        // Permit access to specific URLs
-//                        .requestMatchers(
-//                                "/register", // login 요청 허락
-//                                "/login",
-//                                "/logout"
-//                        ).permitAll()
-//                        // Restrict other requests to USER role
-//                        .anyRequest().hasRole("USER")
-//                )
-                // Authorization requests 테스트용
-                .authorizeHttpRequests(authorize -> authorize
-                        // 모든 요청을 허용
-                        .anyRequest().permitAll()
+                .csrf(csrf -> csrf.disable()) // CSRF 보호 비활성화 (필요한 경우 활성화 가능)
+                .formLogin(formLogin -> formLogin
+                        .loginPage("/login") // 커스텀 로그인 페이지 경로
+                        .loginProcessingUrl("/doLogin") // 실제 로그인 처리를 할 경로 설정 (컨트롤러의 /login과 충돌하지 않도록 변경)
+                        .permitAll()
                 )
-                // Custom exception handling
+                .logout(logout -> logout
+                        .logoutUrl("/logout") // 로그아웃 URL 설정
+                        .logoutSuccessHandler((request, response, authentication) -> {
+                            if (authentication != null) {
+                                System.out.println("로그아웃 성공: " + authentication.getName());
+                            } else {
+                                System.out.println("로그인 상태가 아님");
+                            }
+                            response.sendRedirect("/login?logout");
+                        })
+                )
+
+                .sessionManagement(session -> session
+                        .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED) // 세션이 필요할 때 생성
+                )
+                .authorizeHttpRequests(authorize -> authorize
+                        .requestMatchers("/register", "/login", "/logout", "login.html").permitAll() // 특정 URL은 인증 없이 접근 가능
+                        .anyRequest().authenticated() // 나머지 요청은 인증 필요
+                )
                 .exceptionHandling(exception -> exception
                         .accessDeniedHandler(new CustomAccessDeniedHandler())
                         .authenticationEntryPoint(new CustomAuthenticationEntryPoint())
-                )
-                // Add JWT filter before UsernamePasswordAuthenticationFilter
-                .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider), UsernamePasswordAuthenticationFilter.class);
+                );
 
         return http.build();
     }
+
 }

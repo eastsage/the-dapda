@@ -23,6 +23,7 @@ import java.util.List;
 @AllArgsConstructor
 public class User extends BaseTimeEntity implements UserDetails {
 
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int userId;

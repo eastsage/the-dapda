@@ -3,7 +3,9 @@ package com.the_dapda.global.security.provider;
 import io.jsonwebtoken.Jwts;
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import jakarta.annotation.PostConstruct;
 import jakarta.servlet.http.HttpServletRequest;
@@ -32,6 +34,8 @@ public class JwtTokenProvider {
     private final long tokenValidMillisecond = 1000L * 60 * 60; // 1시간 토큰 유효
     private SecretKey secretKey;
 
+    // 블랙리스트를 위한 저장소 (In-Memory)
+    private Set<String> blacklist = new HashSet<>();
 
     @PostConstruct
     protected void init() {
@@ -83,15 +87,24 @@ public class JwtTokenProvider {
     }
 
     public String resolveToken(HttpServletRequest request) {
-        LOGGER.info("[resolveToken] HTTP 헤더에서 Token 값 추출");
-        return request.getHeader("X-AUTH-TOKEN");
+        String bearerToken = request.getHeader("Authorization");
+        if (bearerToken != null && bearerToken.startsWith("Bearer ")) {
+            return bearerToken.substring(7);  // "Bearer " 이후의 토큰 값만 추출
+        }
+        return null;
     }
+
 
     // JWT 토큰의 유효성 + 만료일 체크
     public boolean validateToken(String token) {
         LOGGER.info("[validateToken] 토큰 유효 체크 시작");
         try {
-            return ! Jwts.parser()
+            // 토큰이 블랙리스트에 있는지 확인
+            if (blacklist.contains(token)) {
+                LOGGER.info("[validateToken] 블랙리스트에 포함된 토큰");
+                return false;  // 블랙리스트에 있으면 유효하지 않음
+            }
+            return !Jwts.parser()
                     .verifyWith(secretKey)
                     .build()
                     .parseSignedClaims(token).getPayload()
@@ -100,5 +113,11 @@ public class JwtTokenProvider {
             LOGGER.info("[validateToken] 토큰 유효 체크 예외 발생");
             return false;
         }
+    }
+
+    // 토큰을 블랙리스트에 추가
+    public void addToBlacklist(String token) {
+        LOGGER.info("[addToBlacklist] 토큰을 블랙리스트에 추가합니다.");
+        blacklist.add(token);
     }
 }
