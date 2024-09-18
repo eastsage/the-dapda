@@ -1,7 +1,5 @@
 package com.the_dapda.global.security.config;
 
-import com.the_dapda.global.security.config.CustomAccessDeniedHandler;
-import com.the_dapda.global.security.config.CustomAuthenticationEntryPoint;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -27,7 +25,9 @@ public class SecurityConfiguration {
                 .csrf(csrf -> csrf.disable()) // CSRF 보호 비활성화 (필요한 경우 활성화 가능)
                 .formLogin(formLogin -> formLogin
                         .loginPage("/login") // 커스텀 로그인 페이지 경로
-                        .loginProcessingUrl("/doLogin") // 실제 로그인 처리를 할 경로 설정 (컨트롤러의 /login과 충돌하지 않도록 변경)
+//                        .loginProcessingUrl("/login") // 해당 설정은 security가 url을 가로채 자동으로 인증을 수행함
+                        .defaultSuccessUrl("/diaries/main")
+                        .usernameParameter("id")
                         .permitAll()
                 )
                 .logout(logout -> logout
@@ -46,7 +46,7 @@ public class SecurityConfiguration {
                         .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED) // 세션이 필요할 때 생성
                 )
                 .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers("/register", "/login", "/logout", "login.html").permitAll() // 특정 URL은 인증 없이 접근 가능
+                        .requestMatchers("/css/**", "/js/**", "/images/**", "/register", "/login", "/logout", "login.html").permitAll() // 정적 리소스 및 특정 URL 접근 허용
                         .anyRequest().authenticated() // 나머지 요청은 인증 필요
                 )
                 .exceptionHandling(exception -> exception
