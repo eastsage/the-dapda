@@ -9,6 +9,9 @@ import com.the_dapda.global.response.ResponseForm;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -17,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 @Controller
 @RequiredArgsConstructor
+@Slf4j
 public class UserController {
 
     private final UserService userService;
@@ -36,10 +40,10 @@ public class UserController {
             User user = userService.register(registerDto);
             model.addAttribute("message", ResponseForm.of(ResponseCode.AUTH_REGISTER_SUCCESS, user));
             model.addAttribute("loginDto", new LoginDto()); // loginDto를 추가하여 로그인 페이지로 전달
-            return "login"; // 회원가입 후 로그인 페이지로 이동
+            return "redirect:/login"; // 회원가입 후 로그인 페이지로 이동
         } catch (IllegalArgumentException e) {
             model.addAttribute("error", ResponseForm.of(ResponseCode.AUTH_REGISTER_FAIL, e.getMessage()));
-            return "signup"; // 실패 시 다시 회원가입 페이지로 이동
+            return "redirect:/register"; // 실패 시 다시 회원가입 페이지로 이동
         }
     }
 
@@ -54,12 +58,16 @@ public class UserController {
     // 로그인
     @PostMapping("/login")
     public String login(LoginDto loginDto, HttpSession session, Model model) {
+        log.info("logging in {}", loginDto);
         try {
             User user = userService.login(loginDto);
+            log.info("Logged in user: {}", user);
+            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+            log.info("Authenticated user from SecurityContext: {}", auth);
             if (user != null) {
                 session.setAttribute("user", user);  // 세션에 사용자 객체 저장
                 model.addAttribute("message", ResponseForm.of(ResponseCode.AUTH_LOGIN_SUCCESS, user));
-                return "main"; // 로그인 성공 시 홈 페이지로 이동
+                return "redirect:/diaries/main"; // 로그인 성공 시 홈 페이지로 이동
             } else {
                 model.addAttribute("error", ResponseForm.of(ResponseCode.AUTH_LOGIN_FAIL, "로그인 실패"));
                 return "login"; // 로그인 실패 시 다시 로그인 페이지로 이동
