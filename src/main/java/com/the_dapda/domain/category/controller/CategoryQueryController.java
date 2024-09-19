@@ -24,9 +24,9 @@ public class CategoryQueryController {
     private final CategoryQueryService categoryQueryService;
 
     @GetMapping
-    public String getCategories(@RequestParam("year") int year,
-                                @RequestParam("month") int month,
-                                @RequestParam("day") int day,
+    public String getCategories(@RequestParam(value = "year", required = false) Integer year,
+                                @RequestParam(value = "month", required = false) Integer month,
+                                @RequestParam(value = "day", required = false) Integer day,
                                 HttpServletRequest request,
                                 Model model) {
 
