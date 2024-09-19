@@ -94,7 +94,7 @@ public class DiaryQueryController {
     public String mainPage(Model model,
                            @RequestParam(value = "year", required = false) Integer year,
                            @RequestParam(value = "month", required = false) Integer month,
-                           HttpServletRequest request, @AuthenticationPrincipal User securityUser) {
+                           HttpServletRequest request, @AuthenticationPrincipal User user) {
 
         // 현재 연도와 월 기본값 설정 (파라미터가 없으면 현재 날짜 사용)
         LocalDate now = LocalDate.now();
@@ -116,10 +116,6 @@ public class DiaryQueryController {
         for (int i = 0; i < emptyDaysCount; i++) {
             emptyDays.add(i);
         }
-
-        HttpSession session = request.getSession();
-        User user = (User) session.getAttribute("user");
-        log.info("user {}", user);
 
         List<MainDiaryDto> diaryDtos = diaryQueryService.getMainDiaries(currentYear, currentMonth, user.getUserId());
         // 해당 월의 날짜 리스트 생성
