@@ -32,7 +32,6 @@
         .btn-custom-2 { background-color: #3498db; color: white; }
         .btn-custom-3 { background-color: #e74c3c; color: white; }
         .btn-custom-4 { background-color: #f39c12; color: white; }
-
     </style>
 </head>
 <body>
@@ -40,22 +39,17 @@
 <!-- 모바일 폰 모양 -->
 <div class="mobile-frame">
     <div class="mobile-content">
-
         <!-- 버튼 컨테이너 -->
         <div class="btn-container">
             <!-- 카테고리 버튼 반복 렌더링 -->
-            <div th:each="category : ${categories}">
-                <a th:href="@{/diaries/question(year=${session.year}, month=${session.month}, day=${session.day}, categoryId=${category.categoryId})}"
+            <div th:each="category : ${categoryResponses}">
+                <a th:href="@{/diaries/question(year=${session.YEAR}, month=${session.MONTH}, day=${session.DAY}, categoryId=${category.categoryId})}"
                    th:text="${category.title}"
                    class="btn btn-block"
-                   th:classappend="${category.categoryId == 1} ? 'btn-custom-1' : ''"
-                   th:classappend="${category.categoryId == 2} ? 'btn-custom-2' : ''"
-                   th:classappend="${category.categoryId == 3} ? 'btn-custom-3' : ''"
-                   th:classappend="${category.categoryId == 4} ? 'btn-custom-4' : ''">
+                   th:classappend="'btn-custom-' + ${category.categoryId}">
                 </a>
             </div>
         </div>
-
     </div>
 </div>
 

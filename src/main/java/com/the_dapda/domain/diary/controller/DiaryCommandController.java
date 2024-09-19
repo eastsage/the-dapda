@@ -13,6 +13,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -29,22 +30,25 @@ public class DiaryCommandController {
     // 일기 저장
     @PostMapping
     public String saveDiary(
-            @RequestBody DiarySaveRequest saveRequest,
+            DiarySaveRequest saveRequest,
             HttpServletRequest request,
-            Model model) {
+            Model model,
+            @AuthenticationPrincipal User user) {
+
+        log.info("diary save request: {}", saveRequest);
 
         HttpSession session = request.getSession();
         int year = (Integer) session.getAttribute(String.valueOf(SessionConst.YEAR));
         int month = (Integer) session.getAttribute(String.valueOf(SessionConst.MONTH));
         int day = (Integer) session.getAttribute(String.valueOf(SessionConst.DAY));
+        Long categoryId = (Long) session.getAttribute("categoryId");
         log.info("year {}", year);
         log.info("month {}", month);
         log.info("day {}", day);
-
-        User user = (User) session.getAttribute("user");
         log.info("user {}", user);
 
         saveRequest.setDate(new Date(year, month, day));
+        saveRequest.setCategoryId(categoryId);
         Long diaryId = diaryCommandService.saveDiary(saveRequest, user);
         DiaryGetResponse diaryGetResponse = diaryQueryService.getDiary(diaryId);
 

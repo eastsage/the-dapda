@@ -71,20 +71,20 @@
             <div class="row">
                 <div class="col-12 text-center">
                     <!-- 세션에서 날짜와 요일 가져오기 -->
-                    <h4 th:text="'🗓️ ' + ${session.selectedDate} + ' (' + ${dayOfWeek} + ')'"></h4>
+                    <h4 th:text="'🗓️ ' + ${session.YEAR} + '년 ' + ${session.MONTH} + '월 ' + ${session.DAY} + '일 '"></h4>
                 </div>
             </div>
 
             <!-- 폼으로 데이터를 전송 -->
-            <form th:action="@{/submit-diary}" method="post">
+            <form th:action="@{/diaries}" th:object="${diarySaveRequest}" method="post">
                 <!-- AI 질문 표시 -->
                 <div class="row">
                     <div class="col-12">
-                        <div class="message-box" th:text="${aiQuestion}">
+                        <div class="message-box" th:text="${question}">
                             <!-- AI 질문 내용 -->
                         </div>
-                        <input type="hidden" name="question" th:value="${aiQuestion}">
-                        <input type="hidden" name="categoryId" th:value="${categoryId}">
+                        <!-- 질문 내용을 숨겨서 전송 -->
+                        <input type="hidden" th:field="*{question}" th:value="${question}" />
                     </div>
                 </div>
 
@@ -92,7 +92,7 @@
                 <div class="row">
                     <div class="col-12">
                         <div class="answer-box">
-                            <textarea class="form-control" name="answer" rows="4" placeholder="질문에 대한 답변을 작성하세요"></textarea>
+                            <textarea class="form-control" th:field="*{content}" rows="4" placeholder="질문에 대한 답변을 작성하세요"></textarea>
                         </div>
                     </div>
                 </div>
@@ -102,25 +102,21 @@
                     <!-- T/F 라디오 버튼 -->
                     <div class="form-check d-flex justify-content-center mb-3">
                         <div class="form-check">
-                            <input class="form-check-input" type="radio" name="tfValue" id="optionT" value="T" checked>
+                            <input class="form-check-input" type="radio" th:field="*{tfMode}" id="optionT" value="T" checked>
                             <label class="form-check-label" for="optionT">
                                 T 🤔
                             </label>
                         </div>
                         <div class="form-check ms-3">
-                            <input class="form-check-input" type="radio" name="tfValue" id="optionF" value="F">
+                            <input class="form-check-input" type="radio" th:field="*{tfMode}" id="optionF" value="F">
                             <label class="form-check-label" for="optionF">
                                 F 🥹
                             </label>
                         </div>
                     </div>
 
-                    <div class="text-center mb-3">
-                        <small class="text-muted">T는 현실적인 답변, F는 감성적인 답변</small>
-                    </div>
-
                     <!-- 다이어리 쓰기 버튼 -->
-                    <button type="submit" class="btn btn-diary">다이어리 쓰기</button>
+                    <button type="submit" class="btn btn-diary">다이어리 생성</button>
                 </div>
             </form>
         </div>
