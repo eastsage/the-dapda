@@ -8,14 +8,11 @@ import com.the_dapda.domain.diary.entity.Date;
 import com.the_dapda.domain.diary.service.command.DiaryCommandService;
 import com.the_dapda.domain.diary.service.query.DiaryQueryService;
 import com.the_dapda.domain.user.entity.User;
-import com.the_dapda.global.response.ResponseCode;
-import com.the_dapda.global.response.ResponseForm;
 import com.the_dapda.global.session.SessionConst;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -62,11 +59,11 @@ public class DiaryCommandController {
 
     // 일기 삭제
     @DeleteMapping("/{diaryId}")
-    public ResponseEntity<ResponseForm> deleteDiary(@PathVariable("diaryId") Long diaryId) {
+    public String deleteDiary(@PathVariable("diaryId") Long diaryId) {
         DiaryDeleteResponse diaryDeleteResponse = diaryCommandService.deleteDiary(diaryId);
-
-        return diaryDeleteResponse != null ?
-                ResponseEntity.ok(ResponseForm.of(ResponseCode.EXAMPLE_SUCCESS, diaryDeleteResponse)) :
-                ResponseEntity.ok(ResponseForm.of(ResponseCode.EXAMPLE_FAIL));
+        if (diaryDeleteResponse.getResult().equals("success")) {
+            return "redirect:/main";
+        }
+        return "view-diary";
     }
 }
