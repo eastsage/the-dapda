@@ -6,7 +6,6 @@ import com.the_dapda.domain.category.entity.Category;
 import com.the_dapda.domain.category.repository.CategoryRepository;
 import com.the_dapda.domain.diary.dto.request.DiarySaveRequest;
 import com.the_dapda.domain.diary.dto.response.DiaryDeleteResponse;
-import com.the_dapda.domain.diary.dto.response.DiarySaveResponse;
 import com.the_dapda.domain.diary.entity.Diary;
 import com.the_dapda.domain.diary.repository.DiaryRepository;
 import com.the_dapda.domain.diary.service.command.DiaryCommandService;
@@ -27,7 +26,7 @@ public class DiaryCommandServiceImpl implements DiaryCommandService {
     private final ChatService chatService;
 
     @Override
-    public DiarySaveResponse saveDiary(DiarySaveRequest saveRequest, User user) {
+    public Long saveDiary(DiarySaveRequest saveRequest, User user) {
         Category category = categoryRepository.findById(saveRequest.getCategoryId())
                 .orElseThrow(() -> new RuntimeException("no category"));
         log.info("{}", category);
@@ -54,7 +53,7 @@ public class DiaryCommandServiceImpl implements DiaryCommandService {
                 .user(user)
                 .build();
         Diary savedDiary = diaryRepository.save(diary);
-        return new DiarySaveResponse(savedDiary.getId());
+        return savedDiary.getId();
     }
 
     @Override
