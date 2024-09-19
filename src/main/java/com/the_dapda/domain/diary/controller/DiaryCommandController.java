@@ -2,9 +2,11 @@ package com.the_dapda.domain.diary.controller;
 
 import com.the_dapda.domain.diary.dto.request.DiarySaveRequest;
 import com.the_dapda.domain.diary.dto.response.DiaryDeleteResponse;
+import com.the_dapda.domain.diary.dto.response.DiaryGetResponse;
 import com.the_dapda.domain.diary.dto.response.DiarySaveResponse;
 import com.the_dapda.domain.diary.entity.Date;
 import com.the_dapda.domain.diary.service.command.DiaryCommandService;
+import com.the_dapda.domain.diary.service.query.DiaryQueryService;
 import com.the_dapda.domain.user.entity.User;
 import com.the_dapda.global.response.ResponseCode;
 import com.the_dapda.global.response.ResponseForm;
@@ -15,6 +17,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 @Slf4j
@@ -24,12 +27,14 @@ import org.springframework.web.bind.annotation.*;
 public class DiaryCommandController {
 
     private final DiaryCommandService diaryCommandService;
+    private final DiaryQueryService diaryQueryService;
 
     // 일기 저장
     @PostMapping
-    public ResponseEntity<ResponseForm> saveDiary(
+    public String saveDiary(
             @RequestBody DiarySaveRequest saveRequest,
-            HttpServletRequest request) {
+            HttpServletRequest request,
+            Model model) {
 
         HttpSession session = request.getSession();
         int year = (Integer) session.getAttribute(String.valueOf(SessionConst.YEAR));
@@ -43,13 +48,16 @@ public class DiaryCommandController {
         log.info("user {}", user);
 
         saveRequest.setDate(new Date(year, month, day));
-        DiarySaveResponse diarySaveResponse = diaryCommandService.saveDiary(saveRequest, user);
+        Long diaryId = diaryCommandService.saveDiary(saveRequest, user);
+        DiaryGetResponse diaryGetResponse = diaryQueryService.getDiary(diaryId);
 
-        return diarySaveResponse != null ?
-                ResponseEntity.ok(ResponseForm.of(ResponseCode.EXAMPLE_SUCCESS, diarySaveResponse)) :
-                ResponseEntity.ok(ResponseForm.of(ResponseCode.EXAMPLE_FAIL));
-        // 날짜, 질문, 유저의 글, AI 답변
-        // view-diary.html 로 전송
+        DiarySaveResponse diarySaveResponse = DiarySaveResponse.from(diaryGetResponse);
+        diarySaveResponse.setYear(year);
+        diarySaveResponse.setMonth(month);
+        diarySaveResponse.setDay(day);
+
+        model.addAttribute("diarySaveResponse", diarySaveResponse);
+        return "view-diary";
     }
 
     // 일기 삭제

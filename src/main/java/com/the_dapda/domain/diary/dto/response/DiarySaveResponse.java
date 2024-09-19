@@ -11,5 +11,24 @@ import lombok.Setter;
 @AllArgsConstructor
 public class DiarySaveResponse {
 
-    private Long diaryId;
+    private int year;
+    private int month;
+    private int day;
+    private String question;
+    private String content;
+    private String answer;
+
+    public DiarySaveResponse(String question, String content, String answer) {
+        this.question = question;
+        this.content = content;
+        this.answer = answer;
+    }
+
+    public static DiarySaveResponse from(DiaryGetResponse diaryGetResponse) {
+        return new DiarySaveResponse(
+                diaryGetResponse.getQuestion(),
+                diaryGetResponse.getContent(),
+                diaryGetResponse.getAnswer()
+        );
+    }
 }
