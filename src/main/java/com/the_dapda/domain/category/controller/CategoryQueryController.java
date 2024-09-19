@@ -5,14 +5,14 @@ import com.the_dapda.domain.category.dto.response.CategoryResponse;
 import com.the_dapda.domain.category.service.CategoryQueryService;
 import com.the_dapda.global.response.ResponseCode;
 import com.the_dapda.global.response.ResponseForm;
+import com.the_dapda.global.session.SessionConst;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -24,7 +24,17 @@ public class CategoryQueryController {
     private final CategoryQueryService categoryQueryService;
 
     @GetMapping
-    public String getCategories(Model model) {
+    public String getCategories(@RequestParam(value = "year", required = false) Integer year,
+                                @RequestParam(value = "month", required = false) Integer month,
+                                @RequestParam(value = "day", required = false) Integer day,
+                                HttpServletRequest request,
+                                Model model) {
+
+        HttpSession session = request.getSession();
+        session.setAttribute(String.valueOf(SessionConst.YEAR), year);
+        session.setAttribute(String.valueOf(SessionConst.MONTH), month);
+        session.setAttribute(String.valueOf(SessionConst.DAY), day);
+
         List<CategoryResponse> categoryResponses = categoryQueryService.getCategories();
 
         model.addAttribute("categoryResponses", categoryResponses);

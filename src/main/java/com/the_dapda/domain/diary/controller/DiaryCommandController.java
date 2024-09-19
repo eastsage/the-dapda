@@ -48,6 +48,8 @@ public class DiaryCommandController {
         return diarySaveResponse != null ?
                 ResponseEntity.ok(ResponseForm.of(ResponseCode.EXAMPLE_SUCCESS, diarySaveResponse)) :
                 ResponseEntity.ok(ResponseForm.of(ResponseCode.EXAMPLE_FAIL));
+        // 날짜, 질문, 유저의 글, AI 답변
+        // view-diary.html 로 전송
     }
 
     // 일기 삭제
