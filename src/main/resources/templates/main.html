@@ -174,7 +174,7 @@
                 </span>
                 <!-- 날짜가 days 리스트에 포함되지 않은 경우, /question/category 페이지로 이동 -->
                 <a th:if="${!days.contains(day)}"
-                   th:href="@{/diaries/question/category(year=${currentYear}, month=${currentMonth}, day=${day})}"
+                   th:href="@{/categories(year=${currentYear}, month=${currentMonth}, day=${day})}"
                    th:text="${day}"
                    class="custom-link">
                 </a>

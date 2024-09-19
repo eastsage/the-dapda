@@ -43,25 +43,17 @@
 
         <!-- 버튼 컨테이너 -->
         <div class="btn-container">
-            <!-- 감정과 기분 버튼 (categoryId = 1) -->
-            <a th:href="@{/diaries/question(year=${year}, month=${month}, day=${day}, categoryId=1)}" class="btn btn-block btn-custom-1">
-                감정과 기분
-            </a>
-
-            <!-- 인간 관계 버튼 (categoryId = 2) -->
-            <a th:href="@{/diaries/question(year=${year}, month=${month}, day=${day}, categoryId=2)}" class="btn btn-block btn-custom-2">
-                인간 관계
-            </a>
-
-            <!-- 일과 커리어 버튼 (categoryId = 3) -->
-            <a th:href="@{/diaries/question(year=${year}, month=${month}, day=${day}, categoryId=3)}" class="btn btn-block btn-custom-3">
-                일과 커리어
-            </a>
-
-            <!-- 성찰과 감사 버튼 (categoryId = 4) -->
-            <a th:href="@{/diaries/question(year=${year}, month=${month}, day=${day}, categoryId=4)}" class="btn btn-block btn-custom-4">
-                성찰과 감사
-            </a>
+            <!-- 카테고리 버튼 반복 렌더링 -->
+            <div th:each="category : ${categories}">
+                <a th:href="@{/diaries/question(year=${session.year}, month=${session.month}, day=${session.day}, categoryId=${category.categoryId})}"
+                   th:text="${category.title}"
+                   class="btn btn-block"
+                   th:classappend="${category.categoryId == 1} ? 'btn-custom-1' : ''"
+                   th:classappend="${category.categoryId == 2} ? 'btn-custom-2' : ''"
+                   th:classappend="${category.categoryId == 3} ? 'btn-custom-3' : ''"
+                   th:classappend="${category.categoryId == 4} ? 'btn-custom-4' : ''">
+                </a>
+            </div>
         </div>
 
     </div>
