@@ -2,12 +2,16 @@ package com.the_dapda.domain.diary.controller;
 
 import com.the_dapda.domain.diary.dto.DiaryDto;
 import com.the_dapda.domain.diary.dto.MainDiaryDto;
+import com.the_dapda.domain.diary.dto.request.DiarySaveRequest;
 import com.the_dapda.domain.diary.dto.response.DiaryGetResponse;
 import com.the_dapda.domain.diary.dto.response.QuestionGetResponse;
 import com.the_dapda.domain.diary.service.query.DiaryQueryService;
 import com.the_dapda.domain.user.entity.User;
 import com.the_dapda.global.response.ResponseCode;
 import com.the_dapda.global.response.ResponseForm;
+import com.the_dapda.global.session.SessionConst;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -38,11 +42,17 @@ public class DiaryQueryController {
     @GetMapping("/question")
     public String getQuestion(
             Model model,
+            HttpServletRequest request,
             @RequestParam(value = "categoryId") Long categoryId) {
+        HttpSession session = request.getSession();
+        session.setAttribute("categoryId", categoryId);
 
         QuestionGetResponse questionGetResponse = diaryQueryService.getQuestion(categoryId);
         model.addAttribute("question", questionGetResponse.getQuestion());
 
+        DiarySaveRequest diarySaveRequest = new DiarySaveRequest();
+        diarySaveRequest.setQuestion(questionGetResponse.getQuestion());
+        model.addAttribute("diarySaveRequest", diarySaveRequest);
         return "view-question";
     }
 
