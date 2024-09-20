@@ -3,7 +3,7 @@ package com.the_dapda.domain.diary.controller;
 import com.the_dapda.domain.diary.dto.request.DiarySaveRequest;
 import com.the_dapda.domain.diary.dto.response.DiaryDeleteResponse;
 import com.the_dapda.domain.diary.dto.response.DiaryGetResponse;
-import com.the_dapda.domain.diary.dto.response.DiarySaveResponse;
+import com.the_dapda.domain.diary.dto.response.DiaryResponse;
 import com.the_dapda.domain.diary.entity.Date;
 import com.the_dapda.domain.diary.service.command.DiaryCommandService;
 import com.the_dapda.domain.diary.service.query.DiaryQueryService;
@@ -52,12 +52,13 @@ public class DiaryCommandController {
         Long diaryId = diaryCommandService.saveDiary(saveRequest, user);
         DiaryGetResponse diaryGetResponse = diaryQueryService.getDiary(diaryId);
 
-        DiarySaveResponse diarySaveResponse = DiarySaveResponse.from(diaryGetResponse);
-        diarySaveResponse.setYear(year);
-        diarySaveResponse.setMonth(month);
-        diarySaveResponse.setDay(day);
+        DiaryResponse diaryResponse = DiaryResponse.from(diaryGetResponse);
+        diaryResponse.setYear(year);
+        diaryResponse.setMonth(month);
+        diaryResponse.setDay(day);
+        diaryResponse.setDiaryId(diaryId);
 
-        model.addAttribute("diarySaveResponse", diarySaveResponse);
+        model.addAttribute("diaryResponse", diaryResponse);
         return "view-diary";
     }
 
@@ -66,7 +67,7 @@ public class DiaryCommandController {
     public String deleteDiary(@PathVariable("diaryId") Long diaryId) {
         DiaryDeleteResponse diaryDeleteResponse = diaryCommandService.deleteDiary(diaryId);
         if (diaryDeleteResponse.getResult().equals("success")) {
-            return "redirect:/main";
+            return "redirect:/diaries/main";
         }
         return "view-diary";
     }

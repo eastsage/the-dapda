@@ -6,10 +6,13 @@ import com.the_dapda.domain.category.repository.CategoryRepository;
 import com.the_dapda.domain.diary.dto.DiaryDto;
 import com.the_dapda.domain.diary.dto.MainDiaryDto;
 import com.the_dapda.domain.diary.dto.response.DiaryGetResponse;
+import com.the_dapda.domain.diary.dto.response.DiaryResponse;
 import com.the_dapda.domain.diary.dto.response.QuestionGetResponse;
+import com.the_dapda.domain.diary.entity.Date;
 import com.the_dapda.domain.diary.entity.Diary;
 import com.the_dapda.domain.diary.repository.DiaryRepository;
 import com.the_dapda.domain.diary.service.query.DiaryQueryService;
+import com.the_dapda.domain.user.entity.User;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -62,5 +65,19 @@ public class DiaryQueryServiceImpl implements DiaryQueryService {
                 .stream()
                 .map(MainDiaryDto::new)
                 .toList();
+    }
+
+    @Override
+    public DiaryResponse getDiaryByUserAndDate(User user, Date date) {
+        Diary diary = diaryRepository.findByUserAndDate(user, date)
+                .orElseThrow(() -> new RuntimeException("no diary"));
+        return DiaryResponse.builder()
+                .diaryId(diary.getId())
+                .question(diary.getQuestion())
+                .answer(diary.getAnswer())
+                .content(diary.getContent())
+                .year(date.getYear())
+                .month(date.getMonth())
+                .day(date.getDay()).build();
     }
 }

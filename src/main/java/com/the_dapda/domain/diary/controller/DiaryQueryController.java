@@ -4,7 +4,9 @@ import com.the_dapda.domain.diary.dto.DiaryDto;
 import com.the_dapda.domain.diary.dto.MainDiaryDto;
 import com.the_dapda.domain.diary.dto.request.DiarySaveRequest;
 import com.the_dapda.domain.diary.dto.response.DiaryGetResponse;
+import com.the_dapda.domain.diary.dto.response.DiaryResponse;
 import com.the_dapda.domain.diary.dto.response.QuestionGetResponse;
+import com.the_dapda.domain.diary.entity.Date;
 import com.the_dapda.domain.diary.service.query.DiaryQueryService;
 import com.the_dapda.domain.user.entity.User;
 import com.the_dapda.global.response.ResponseCode;
@@ -51,31 +53,35 @@ public class DiaryQueryController {
         model.addAttribute("question", questionGetResponse.getQuestion());
 
         DiarySaveRequest diarySaveRequest = new DiarySaveRequest();
+        diarySaveRequest.setTfMode("T");
         diarySaveRequest.setQuestion(questionGetResponse.getQuestion());
         model.addAttribute("diarySaveRequest", diarySaveRequest);
         return "view-question";
     }
 
-    @GetMapping("/{diaryId}")
+    @GetMapping
     public String getDiary(
             Model model,
-            @PathVariable("diaryId") Long diaryId) {
-        DiaryGetResponse diaryGetResponse = diaryQueryService.getDiary(diaryId);
-        model.addAttribute("question", diaryGetResponse.getQuestion());
-        model.addAttribute("content", diaryGetResponse.getContent());
-        model.addAttribute("answer", diaryGetResponse.getAnswer());
+            @RequestParam(value = "year") Integer year,
+            @RequestParam(value = "month") Integer month,
+            @RequestParam(value = "day") Integer day,
+            @AuthenticationPrincipal User user) {
+        Date date = new Date(year, month, day);
+        DiaryResponse diaryResponse = diaryQueryService.getDiaryByUserAndDate(user, date);
+
+        model.addAttribute("diaryResponse", diaryResponse);
 
         return "view-diary";
     }
 
-    @GetMapping
-    public ResponseEntity<ResponseForm> getDiaries(Pageable pageable) {
-        Page<DiaryDto> diaryDtos = diaryQueryService.getDiaries(pageable);
-
-        return diaryDtos != null ?
-                ResponseEntity.ok(ResponseForm.of(ResponseCode.EXAMPLE_SUCCESS, diaryDtos)) :
-                ResponseEntity.ok(ResponseForm.of(ResponseCode.EXAMPLE_FAIL));
-    }
+//    @GetMapping
+//    public ResponseEntity<ResponseForm> getDiaries(Pageable pageable) {
+//        Page<DiaryDto> diaryDtos = diaryQueryService.getDiaries(pageable);
+//
+//        return diaryDtos != null ?
+//                ResponseEntity.ok(ResponseForm.of(ResponseCode.EXAMPLE_SUCCESS, diaryDtos)) :
+//                ResponseEntity.ok(ResponseForm.of(ResponseCode.EXAMPLE_FAIL));
+//    }
 
     @GetMapping("/main")
     public String mainPage(Model model,

@@ -1,16 +1,15 @@
 package com.the_dapda.domain.diary.dto.response;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class DiarySaveResponse {
+@Builder
+public class DiaryResponse {
 
+    private Long diaryId;
     private int year;
     private int month;
     private int day;
@@ -18,14 +17,14 @@ public class DiarySaveResponse {
     private String content;
     private String answer;
 
-    public DiarySaveResponse(String question, String content, String answer) {
+    public DiaryResponse(String question, String content, String answer) {
         this.question = question;
         this.content = content;
         this.answer = answer;
     }
 
-    public static DiarySaveResponse from(DiaryGetResponse diaryGetResponse) {
-        return new DiarySaveResponse(
+    public static DiaryResponse from(DiaryGetResponse diaryGetResponse) {
+        return new DiaryResponse(
                 diaryGetResponse.getQuestion(),
                 diaryGetResponse.getContent(),
                 diaryGetResponse.getAnswer()
