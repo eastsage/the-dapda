@@ -47,12 +47,11 @@
             background-color: #c0392b;
             border-color: #c0392b;
         }
+
+        /* 버튼 컨테이너가 모든 컨텐츠 이후에 나옴 */
         .bottom-container {
-            position: absolute;  /* fixed에서 absolute로 변경 */
-            bottom: 0;           /* 뷰의 아래쪽에 고정 */
-            left: 0;
-            width: 100%;         /* 너비를 100%로 설정하여 부모 컨테이너를 채움 */
-            padding: 15px;       /* 패딩 추가 */
+            padding: 15px;
+            margin-top: 20px; /* 컨텐츠와 간격 */
         }
 
         .section-title {
@@ -99,9 +98,6 @@
 
             <!-- 삭제 및 메인으로 가는 버튼 -->
             <div class="bottom-container">
-                <!-- 삭제 버튼 -->
-<!--                <button class="btn btn-delete mb-2" th:onclick="'deleteDiary(' + ${diaryResponse.diaryId} + ')'">삭제</button>-->
-
                 <!-- 삭제 버튼 (폼으로 삭제 요청 전송) -->
                 <form th:action="@{/diaries/{id}(id=${diaryResponse.diaryId})}" method="post" class="mb-2">
                     <!-- 스프링에서 DELETE 요청으로 변환해 주는 hidden 필드 -->
