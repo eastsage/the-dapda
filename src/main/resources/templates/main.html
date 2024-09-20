@@ -168,7 +168,7 @@
             <!-- 1부터 daysInMonth까지 반복 -->
             <li th:each="day, stat : ${#numbers.sequence(1, daysInMonth)}">
                 <!-- days 리스트에 포함된 날짜라면 노란 배경과 동그라미 추가 + 링크 추가 -->
-                <a th:if="${days.contains(day) && day != today}"
+                <a th:if="${days.contains(day)}"
                    th:href="@{/diaries(year=${currentYear}, month=${currentMonth}, day=${day})}"
                    class="highlight-day">
                     <span th:text="${day}"></span>
