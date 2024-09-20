@@ -32,6 +32,15 @@
         .btn-custom-2 { background-color: #3498db; color: white; }
         .btn-custom-3 { background-color: #e74c3c; color: white; }
         .btn-custom-4 { background-color: #f39c12; color: white; }
+
+        /* 스피너와 메시지 중앙 정렬 */
+        .spinner-container {
+            display: none;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            height: 100%;
+        }
     </style>
 </head>
 <body>
@@ -46,15 +55,38 @@
                 <a th:href="@{/diaries/question(year=${session.YEAR}, month=${session.MONTH}, day=${session.DAY}, categoryId=${category.categoryId})}"
                    th:text="${category.title}"
                    class="btn btn-block"
-                   th:classappend="'btn-custom-' + ${category.categoryId}">
+                   th:classappend="'btn-custom-' + ${category.categoryId}"
+                   onclick="handleButtonClick(event)">
                 </a>
             </div>
+        </div>
+
+        <!-- 스피너 및 메시지 표시 -->
+        <div class="spinner-container" id="spinner-container">
+            <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+            <p>AI 응답을 기다리는 중...</p>
         </div>
     </div>
 </div>
 
 <!-- Bootstrap JS (하나만 필요) -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+    function handleButtonClick(event) {
+        // 스피너 표시
+        document.getElementById("spinner-container").style.display = "flex";
+
+        // 모든 버튼 비활성화
+        const buttons = document.querySelectorAll(".btn-block");
+        buttons.forEach(button => {
+            button.classList.add("disabled");
+            button.style.pointerEvents = 'none'; // 클릭 불가
+        });
+    }
+</script>
 
 </body>
 </html>
