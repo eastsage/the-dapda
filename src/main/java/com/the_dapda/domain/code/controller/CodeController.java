@@ -5,11 +5,14 @@ import com.the_dapda.domain.code.entity.Code;
 import com.the_dapda.domain.code.entity.key.CodeKey;
 import com.the_dapda.domain.code.service.CodeService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
 
 // 프로젝트의 복잡도를 줄이기 위해 Controller의 리턴 타입이 Entity 이다. 나중에 Dto 로 변경한다.
 @RestController
 @RequiredArgsConstructor
+@Secured("ROLE_ADMIN")
+@RequestMapping("/admin")
 public class CodeController {
 	
 	private final CodeService codeService;
