@@ -1,7 +1,10 @@
 package com.the_dapda.domain.user.service;
 
+import com.the_dapda.domain.code.entity.GroupCode;
+import com.the_dapda.domain.code.repository.GroupCodeRepository;
 import com.the_dapda.domain.user.dto.LoginDto;
 import com.the_dapda.domain.user.dto.UserDto;
+import com.the_dapda.domain.user.entity.Role;
 import com.the_dapda.domain.user.entity.User;
 import com.the_dapda.domain.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -13,6 +16,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -24,8 +28,10 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final AuthenticationManager authenticationManager;
     private final PasswordEncoder passwordEncoder;
+    private final GroupCodeRepository groupCodeRepository;
 
     @Override
+    @Transactional
     public User register(UserDto userDto) {
         // 중복된 ID 체크
         if (userRepository.findById(userDto.getId()) != null) {
@@ -39,10 +45,17 @@ public class UserServiceImpl implements UserService {
         // 새로운 User 객체 생성 및 저장
         User user = new User();
         user.setId(userDto.getId());
+        user.setRoleCode(Role.ROLE_NORMAL);
         user.setPassword(passwordEncoder.encode(userDto.getPassword()));
         user.setNickname(userDto.getNickname());
-        user.setRole("ROLE_USER");
 
+        GroupCode groupCode = GroupCode.builder()
+                .groupCode("001")
+                .groupCodeName(String.valueOf(Role.ROLE_NORMAL))
+                .groupCodeDesc("가입하는 회원을 구분한다.")
+                .build();
+
+        groupCodeRepository.save(groupCode);
         return userRepository.save(user);
     }
 

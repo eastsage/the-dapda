@@ -1,10 +1,7 @@
 package com.the_dapda.domain.user.entity;
 
 import com.the_dapda.domain.BaseTimeEntity;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -13,8 +10,8 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 
 @Entity
 @Data
@@ -23,7 +20,6 @@ import java.util.List;
 @AllArgsConstructor
 public class User extends BaseTimeEntity implements UserDetails {
 
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int userId;
@@ -31,12 +27,15 @@ public class User extends BaseTimeEntity implements UserDetails {
     private String id;
     private String password;
     private String nickname;
-    private String role;
 
+    @Enumerated(EnumType.STRING)
+    private Role roleCode;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of(new SimpleGrantedAuthority(role));
+        Collection<GrantedAuthority> authorities = new ArrayList<>();
+        authorities.add(new SimpleGrantedAuthority(String.valueOf(roleCode)));
+        return authorities;
     }
 
     @Override

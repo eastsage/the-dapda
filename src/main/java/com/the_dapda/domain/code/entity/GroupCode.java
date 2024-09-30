@@ -4,7 +4,10 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 /*
 @Id 에 GeneratedValue 값을 주지 않으면 select 가 2회 수행
@@ -16,6 +19,7 @@ Hibernate: insert into group_code (group_code_desc,group_code_name,group_code) v
 @Data
 @Entity
 @Table(name = "group_code")
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class GroupCode {
 
 	@Id
@@ -27,4 +31,11 @@ public class GroupCode {
 	
 	@Column(name = "group_code_desc")
 	private String groupCodeDesc;
+
+	@Builder
+	public GroupCode(String groupCode, String groupCodeName, String groupCodeDesc) {
+		this.groupCode = groupCode;
+		this.groupCodeName = groupCodeName;
+		this.groupCodeDesc = groupCodeDesc;
+	}
 }
